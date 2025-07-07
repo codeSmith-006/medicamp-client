@@ -1,0 +1,20 @@
+.nav-active {
+  position: relative;
+  color: #3b82f6; /* Tailwind's text-primary */
+
+  /* Optional: transition color */
+  transition: color 0.3s ease;
+}
+
+.nav-active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #3b82f6;
+  transform-origin: left;
+  transform: scaleX(1);
+  transition: transform 0.3s ease-in-out;
+}
