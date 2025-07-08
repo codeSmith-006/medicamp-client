@@ -35,7 +35,7 @@ const Footer = () => {
         <div>
           <div className="flex items-end gap-3 mb-4">
             <img src={logo} alt="logo" className="w-12 h-12" />
-            <h2 className="text-2xl font-bold text-white mb-2">CareCamp</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">MediCamp</h2>
           </div>
           <p className="text-sm text-gray-400">
             A platform to connect communities with medical care...
@@ -144,7 +144,7 @@ const Footer = () => {
 
       {/* Bottom Section */}
       <div className="border-t border-gray-700 pt-6 pb-5 text-sm text-center text-gray-500">
-        © {year} CareCamp. All rights reserved.
+        © {year} MediCamp. All rights reserved.
       </div>
     </footer>
   );

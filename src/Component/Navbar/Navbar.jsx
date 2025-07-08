@@ -39,7 +39,7 @@ const Navbar = ({ user, onLogout }) => {
               className="text-2xl font-extrabold bg-gradient-to-r from-[#5FACFE] via-[#24A7E8] to-[#46C1E1] 
              bg-clip-text text-transparent tracking-wide drop-shadow-md"
             >
-              CampCare
+              MediCamp
             </span>
           </Link>
         </div>

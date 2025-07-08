@@ -6,7 +6,7 @@ const LoginPage = () => {
     <AuthLayout
       form={<LoginForm />}
       title="New here?"
-      description="Create an account to join the MediConnect community."
+      description="Create an account to join the MediCamp community."
       buttonText="Sign Up"
       onSwitch="/register"
     />

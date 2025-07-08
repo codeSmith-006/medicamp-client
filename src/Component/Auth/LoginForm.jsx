@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
 import { Input } from "../Input/input";
 import { Button } from "../Button/button";
 import { NavLink } from "react-router-dom";
+import toast from "react-hot-toast";
+import GradientButton from "../GradientButton/GradientButton";
+import { FaSignInAlt } from "react-icons/fa";
 
 const LoginForm = ({ onSwitch }) => {
   const { register, handleSubmit } = useForm();
@@ -19,7 +21,7 @@ const LoginForm = ({ onSwitch }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-sm space-y-6 bg-white bg-opacity-10 backdrop-blur-md rounded-lg"
+      className="w-full max-w-sm space-y-6 bg-white bg-opacity-10 backdrop-blur-md rounded-lg px-6"
 
     >
       <h2 className="text-2xl font-bold text-center text-gray-800">Log In</h2>
@@ -44,9 +46,7 @@ const LoginForm = ({ onSwitch }) => {
         </div>
       </div>
 
-      <Button type="submit" className="w-full">
-        Log In
-      </Button>
+      <div className="flex justify-center"><GradientButton type="submit" text="Login" icon={<FaSignInAlt />} /></div>
 
       <Button
         type="button"
