@@ -21,7 +21,7 @@ const JoinUsButton = () => {
 
   return (
     <Link
-      to="/login"
+      to="/join-us"
       className="inline-flex btn items-center gap-2 px-5 py-2.5 rounded-full text-white font-semibold 
                  bg-gradient-to-r from-[#5FACFE] via-[#24A7E8] to-[#46C1E1]
                  bg-[length:200%_200%] bg-left
