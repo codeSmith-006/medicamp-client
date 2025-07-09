@@ -5,6 +5,12 @@ import MainLayout from "../layout/MainLayout";
 // import AuthLayout from "../layout/AuthLayout";
 import LoginPage from "../pages/AuthPage/LoginPage";
 import RegisterPage from "../pages/AuthPage/RegisterPage";
+// import Dashboard from "../pages/Dashboard/Dashboard";
+import DashboardLayout from "../pages/Dashboard/Dashboard";
+import Analytics from "../pages/Dashboard/Analytics";
+import Participants from "../pages/Dashboard/Participants";
+import Camps from "../pages/Dashboard/Camps";
+import Payments from "../pages/Dashboard/Payments";
 
 const Router = createBrowserRouter([
   {
@@ -29,6 +35,34 @@ const Router = createBrowserRouter([
   {
     path: 'register',
     Component: RegisterPage
+  },
+
+  // dashboard
+  {
+    path: 'dashboard',
+    Component: DashboardLayout,
+    children: [
+      {
+        index: true,
+        Component: Analytics
+      },
+      {
+        path: 'analytics',
+        Component: Analytics
+      },
+      {
+        path: 'participants',
+        Component: Participants
+      },
+      {
+        path: 'camps',
+        Component: Camps
+      },
+      {
+        path: 'payments',
+        Component: Payments
+      }
+    ]
   }
 
 ]);

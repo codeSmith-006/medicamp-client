@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import AuthContext from "./AuthContext"; // Your existing context
 import { auth } from "../Auth/Firebase/firebase.config";
+import { setAccessToken } from "../Hooks/AxiousSecure";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -44,6 +45,8 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      // console.log("user: ", currentUser)
+      setAccessToken(currentUser?.accessToken);
       setAuthLoading(false);
     });
 
@@ -61,9 +64,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 

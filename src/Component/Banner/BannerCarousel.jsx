@@ -139,7 +139,7 @@ const BannerCarousel = () => {
       </div>
 
       {/* Thumbnails */}
-      <div className="absolute bottom-32 right-6 md:right-10 flex flex-col gap-4 z-20">
+      <div className="absolute bottom-32 right-6 md:right-10 hidden md:flex flex-col gap-4 z-20">
         {slides.map((slide, index) => (
           <div
             key={slide.id}

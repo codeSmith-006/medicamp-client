@@ -12,6 +12,7 @@ import axios from "axios";
 import GradientButton from "../GradientButton/GradientButton";
 import { FaUserPlus } from "react-icons/fa";
 import AuthContext from "../../Context/AuthContext";
+import { createUser } from "../../APIs/usersApi";
 
 // Helper for password strength
 const getPasswordStrength = (password) => {
@@ -134,7 +135,24 @@ const RegisterForm = ({ onSwitch }) => {
 
         setEmailLoading(false);
         navigate("/");
-        toast.success("Registered successfully!");
+
+        // sending the users data to the backend
+        const payload = {
+          name,
+          email,
+          photoUrl,
+          role: "user",
+        };
+
+        try {
+          const result = await createUser(payload);
+          console.log(result);
+          if (result?.insertedId) {
+            toast.success("Registered successfully!");
+          }
+        } catch (error) {
+          console.log("Error while post users data to database: ", error);
+        }
       }
     } catch (error) {
       console.error("Error while registration with email and password:", error);

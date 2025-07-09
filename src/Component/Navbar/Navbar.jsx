@@ -20,7 +20,7 @@ import AuthContext from "../../Context/AuthContext";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout, authLoading } = use(AuthContext);
-  console.log("User: ", user);
+  // console.log("User: ", user);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
