@@ -1,19 +1,28 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { FaUserCircle } from "react-icons/fa";
+import {
+  DownOutlined,
+  SettingOutlined,
+  UserOutlined,
+  DashboardOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import { Dropdown, Space } from "antd";
 import JoinUsButton from "../JoinUsButton/JoinUsButton";
 import AnimatedLink from "./AnimatedLink";
 import "./active.css";
 import logo from "../../assets/CareCamp logo.png";
+import AuthContext from "../../Context/AuthContext";
 
-const Navbar = ({ user, onLogout }) => {
+const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, logout, authLoading } = use(AuthContext);
+  console.log("User: ", user);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const menuVariants = {
     hidden: { y: -20, opacity: 0 },
@@ -24,6 +33,46 @@ const Navbar = ({ user, onLogout }) => {
     },
     exit: { y: -20, opacity: 0, transition: { duration: 0.2 } },
   };
+
+  // handle logout
+  const onLogout = async () => {
+    logout();
+  };
+
+  // Ant Design dropdown menu items
+  const dropdownItems = [
+    {
+      key: "1",
+      label: user?.displayName || "User",
+      disabled: true,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: (
+        <Link to="/dashboard" className="flex items-center gap-2">
+          Dashboard
+        </Link>
+      ),
+      icon: <DashboardOutlined />,
+      extra: "⌘D",
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "5",
+      label: (
+        <span onClick={onLogout} className="text-red-500">
+          Logout
+        </span>
+      ),
+      icon: <LogoutOutlined />,
+      extra: "⌘L",
+    },
+  ];
 
   return (
     <div className="bg-base-100 shadow-md fixed top-0 left-0 w-full z-50">
@@ -48,44 +97,30 @@ const Navbar = ({ user, onLogout }) => {
         <div className="hidden lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
           <AnimatedLink to="/camps">Available Camps</AnimatedLink>
-          {!user ? (
+          {authLoading ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : !user ? (
             <JoinUsButton></JoinUsButton>
           ) : (
             <div className="relative">
-              <img
-                src={user.photoURL || "/default-avatar.png"}
-                alt="User"
-                className="w-10 h-10 rounded-full cursor-pointer"
-                onClick={toggleDropdown}
-              />
-              {/* Dropdown */}
-              <AnimatePresence>
-                {dropdownOpen && (
-                  <motion.div
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg p-4 z-50"
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={menuVariants}
-                  >
-                    <p className="font-medium text-sm text-gray-700 mb-2">
+              <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
+                <a
+                  onClick={(e) => e.preventDefault()}
+                  className="cursor-pointer"
+                >
+                  <Space className="flex items-center gap-2">
+                    <img
+                      src={user.photoURL || "/default-avatar.png"}
+                      alt="User"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <span className="text-sm font-medium">
                       {user.displayName}
-                    </p>
-                    <Link
-                      to="/dashboard"
-                      className="block text-sm py-1 hover:text-primary"
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={onLogout}
-                      className="btn btn-sm btn-error mt-2 w-full"
-                    >
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    </span>
+                    <DownOutlined />
+                  </Space>
+                </a>
+              </Dropdown>
             </div>
           )}
         </div>

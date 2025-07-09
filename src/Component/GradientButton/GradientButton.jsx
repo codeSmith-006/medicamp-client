@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
+import AuthContext from "../../Context/AuthContext";
 
 const injectKeyframes = () => {
   if (!document.getElementById("slide-gradient-keyframes")) {
@@ -27,6 +28,8 @@ const GradientButton = ({
   useEffect(() => {
     injectKeyframes();
   }, []);
+
+  const {authLoading} = use(AuthContext);
 
   return (
     <button

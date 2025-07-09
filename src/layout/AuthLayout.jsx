@@ -48,24 +48,24 @@ const AuthLayout = ({ form, title, description, buttonText, onSwitch }) => {
       </style>
 
       <div
-        className="min-h-screen w-full flex items-center justify-center px-4 py-10 overflow-hidden relative"
+        className="min-h-screen w-full flex items-center justify-center px-4 overflow-hidden relative"
         style={gradientStyle}
       >
-        <div className="absolute top-4 left-4 z-10">
+        <div className="fixed top-4 left-4 z-50 md:absolute md:z-10">
           <Link
             to="/"
-            className="text-white hover:underline hover:text-gray-200 font-medium transition block mb-4 md:mb-0"
+            className="text-white px-3 py-1 rounded-md text-sm font-medium transition"
           >
             ← Back to Home
           </Link>
         </div>
 
-        <div className="relative w-full max-w-6xl bg-white bg-opacity-10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg flex flex-col md:flex-row h-full md:h-[600px]">
+        <div className="relative w-full max-w-6xl bg-none bg-opacity-10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg flex flex-col md:flex-row h-auto min-h-[700px]">
           <div className="w-full md:w-1/2 flex items-center justify-center px-6 py-10 z-10">
             {form}
           </div>
 
-          <div className="hidden md:flex w-1/2 items-center justify-center px-6 py-10 animated-gradient-bg text-white">
+          <div className="hidden md:flex w-1/2 items-center justify-center px-6 py-10 bg-none text-white">
             <div className="text-center max-w-md">
               <h2 className="text-3xl font-bold mb-4">{title}</h2>
               <p className="mb-6">{description}</p>

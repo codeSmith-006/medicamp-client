@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Upload, message } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
@@ -6,11 +6,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "../Input/input";
 import { Button } from "../Button/button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import GradientButton from "../GradientButton/GradientButton";
 import { FaUserPlus } from "react-icons/fa";
+import AuthContext from "../../Context/AuthContext";
 
 // Helper for password strength
 const getPasswordStrength = (password) => {
@@ -22,17 +23,16 @@ const getPasswordStrength = (password) => {
   const numberCheck = /\d/.test(password);
   const symbolCheck = /[^A-Za-z0-9]/.test(password);
 
-  const checks = [lengthCheck, upperCheck, lowerCheck, numberCheck, symbolCheck];
+  const checks = [
+    lengthCheck,
+    upperCheck,
+    lowerCheck,
+    numberCheck,
+    symbolCheck,
+  ];
   const score = checks.filter(Boolean).length;
 
-  const labels = [
-    "Too weak",
-    "Weak",
-    "Fair",
-    "Good",
-    "Strong",
-    "Very Strong",
-  ];
+  const labels = ["Too weak", "Weak", "Fair", "Good", "Strong", "Very Strong"];
 
   return {
     score,
@@ -40,25 +40,17 @@ const getPasswordStrength = (password) => {
   };
 };
 
-const getBase64 = (img, callback) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result));
-  reader.readAsDataURL(img);
-};
-
+// checks the uploaded file is only png or jpg
 const beforeUpload = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
     message.error("Only JPG/PNG files are allowed!");
   }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error("Image must be smaller than 2MB!");
-  }
-  return isJpgOrPng && isLt2M;
+  return isJpgOrPng;
 };
 
 const RegisterForm = ({ onSwitch }) => {
+  // main submitted data for registration
   const {
     register,
     handleSubmit,
@@ -69,10 +61,21 @@ const RegisterForm = ({ onSwitch }) => {
     mode: "onChange",
   });
 
+  // navigate
+  const navigate = useNavigate();
+
+  // getting register with email
+  const { registerWithEmail, loginWithGoogle, authLoading, updateUserProfile } =
+    use(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  // loading for google login
+  const [googleLoading, setGoogleLoading] = useState(null);
+  // loading for email password login
+  const [emailLoading, setEmailLoading] = useState(null);
 
   const name = watch("name");
   const email = watch("email");
@@ -80,10 +83,13 @@ const RegisterForm = ({ onSwitch }) => {
   const confirmPassword = watch("confirmPassword");
   const photoUrl = watch("photoUrl");
 
-  const { score: strengthScore, label: strengthLabel } = getPasswordStrength(password);
+  const { score: strengthScore, label: strengthLabel } =
+    getPasswordStrength(password);
   const passwordsMatch = password === confirmPassword;
-  const allValid = name && email && photoUrl && passwordsMatch && strengthScore >= 4;
+  const allValid =
+    name && email && photoUrl && passwordsMatch && strengthScore >= 4;
 
+  // handling image upload
   const handleUpload = async ({ file }) => {
     setLoading(true);
 
@@ -106,6 +112,7 @@ const RegisterForm = ({ onSwitch }) => {
     }
   };
 
+  // styles for upload button
   const uploadButton = (
     <button style={{ border: 0, background: "none" }} type="button">
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -113,21 +120,60 @@ const RegisterForm = ({ onSwitch }) => {
     </button>
   );
 
-  const onSubmit = (data) => {
-    console.log("Register:", data);
-    toast.success("Registered successfully!");
+  // submitting the form
+  const onSubmit = async (data) => {
+    setEmailLoading(true);
+    const { email, password, name, photoUrl } = data;
+
+    try {
+      const result = await registerWithEmail(email, password);
+
+      if (result.user) {
+        // Update user profile with name and photo URL
+        await updateUserProfile({ displayName: name, photoURL: photoUrl });
+
+        setEmailLoading(false);
+        navigate("/");
+        toast.success("Registered successfully!");
+      }
+    } catch (error) {
+      console.error("Error while registration with email and password:", error);
+      setEmailLoading(false);
+      toast.error(error.message || "Registration failed");
+    }
+  };
+
+  // handle login with google
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await loginWithGoogle();
+
+      console.log("Google login success:", result.user);
+
+      if (result.user) {
+        toast.success("Logged in with Google!");
+        setGoogleLoading(false);
+        navigate("/");
+      }
+      // Optional: redirect or further processing
+    } catch (error) {
+      console.error("Google login error:", error);
+      setGoogleLoading(false);
+      toast.error(error.message || "Google login failed");
+    }
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-sm space-y-6 bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6"
+      className="w-full max-w-sm space-y-6 bg-transparent backdrop-blur-md  rounded-lg px-6 py-8"
     >
-      <h2 className="text-2xl font-bold text-center text-gray-800">
+      <h2 className="text-2xl font-bold text-center text-white">
         Create Your Account
       </h2>
 
-      {/* Profile Upload with text beside */}
+      {/* Profile Upload */}
       <div className="flex items-center gap-4">
         <div className="shrink-0">
           <Upload
@@ -143,7 +189,7 @@ const RegisterForm = ({ onSwitch }) => {
                 src={preview}
                 alt="avatar"
                 className="rounded-full object-cover"
-                style={{ width: "80px", height: "80px" }}
+                style={{ width: "72px", height: "72px" }}
               />
             ) : (
               uploadButton
@@ -156,10 +202,8 @@ const RegisterForm = ({ onSwitch }) => {
         </div>
 
         <div className="text-sm">
-          <p className="font-medium text-gray-800">Upload your profile photo</p>
-          <p className="text-gray-500">
-            This photo will appear on your dashboard.
-          </p>
+          <p className="font-medium text-white">Upload your profile photo</p>
+          <p className="text-white/80">This will appear on your dashboard.</p>
         </div>
       </div>
 
@@ -168,85 +212,119 @@ const RegisterForm = ({ onSwitch }) => {
         <Input
           placeholder="Full Name"
           {...register("name", { required: "Name is required" })}
-          className="bg-transparent border border-gray-300 text-gray-900 placeholder-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-white/10 text-white placeholder-white border border-white/30 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
         />
         <Input
           placeholder="Email"
           type="email"
           {...register("email", { required: "Email is required" })}
-          className="bg-transparent border border-gray-300 text-gray-900 placeholder-gray-400 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-white/10 text-white placeholder-white border border-white/30 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white"
         />
 
-        <div className="relative">
-          <Input
-            placeholder="Password"
-            type={showPassword ? "text" : "password"}
-            {...register("password", { required: "Password is required" })}
-            className="bg-transparent border border-gray-300 text-gray-900 placeholder-gray-400 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-          {password && (
-            <p className={`text-sm mt-1 ${strengthScore < 4 ? "text-red-500" : "text-green-600"}`}>
-              Strength: {strengthLabel}
-            </p>
-          )}
+        {/* Password */}
+        <div>
+          <div className="relative">
+            <Input
+              placeholder="Password"
+              type={showPassword ? "text" : "password"}
+              {...register("password", { required: "Password is required" })}
+              className="bg-white/10 text-white placeholder-white border border-white/30 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          <div className="h-5 mt-1">
+            {password && (
+              <p
+                className={`text-sm ${
+                  strengthScore < 4 ? "text-red-400" : "text-green-400"
+                }`}
+              >
+                Strength: {strengthLabel}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="relative">
-          <Input
-            placeholder="Confirm Password"
-            type={showConfirm ? "text" : "password"}
-            {...register("confirmPassword", {
-              required: "Confirm your password",
-            })}
-            className="bg-transparent border border-gray-300 text-gray-900 placeholder-gray-400 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirm((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-          {confirmPassword && (
-            <p className={`text-sm mt-1 ${passwordsMatch ? "text-green-600" : "text-red-500"}`}>
-              {passwordsMatch ? "Passwords match" : "Passwords do not match"}
-            </p>
-          )}
+        {/* Confirm Password */}
+        <div>
+          <div className="relative">
+            <Input
+              placeholder="Confirm Password"
+              type={showConfirm ? "text" : "password"}
+              {...register("confirmPassword", {
+                required: "Confirm your password",
+              })}
+              className="bg-white/10 text-white placeholder-white border border-white/30 rounded-md px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white"
+            >
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          <div className="h-5 mt-1">
+            {confirmPassword && (
+              <p
+                className={`text-sm ${
+                  passwordsMatch ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {passwordsMatch ? "Passwords match" : "Passwords do not match"}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Submit Button */}
       <div className="flex justify-center">
         <GradientButton
           type="submit"
-          text="Register"
-          icon={<FaUserPlus />}
+          text={
+            emailLoading ? (
+              <span className="loading loading-spinner loading-md" />
+            ) : (
+              "Register"
+            )
+          }
+          icon={!emailLoading ? <FaUserPlus /> : ""}
           disabled={!allValid}
         />
       </div>
 
+      {/* Google Login Button */}
       <Button
         type="button"
+        onClick={handleGoogleLogin}
         variant="outline"
-        className="w-full flex items-center gap-2 justify-center"
+        className="w-full flex items-center gap-2 justify-center bg-white text-gray-800 hover:bg-gray-100 font-medium shadow-sm"
       >
-        <FcGoogle size={18} />
-        Continue with Google
+        {!googleLoading ? (
+          <>
+            <FcGoogle size={18} />
+            Continue with Google
+          </>
+        ) : (
+          <span className="loading loading-spinner loading-md" />
+        )}
       </Button>
 
-      <p className="text-center text-sm text-gray-600">
+      {/* Switch to Log In */}
+      <p className="text-center text-sm text-white/80">
         Already have an account?{" "}
         <NavLink to="/join-us">
           <button
             type="button"
             onClick={onSwitch}
-            className="text-blue-600 hover:underline font-medium"
+            className="text-blue-300 hover:underline font-medium"
           >
             Log In
           </button>

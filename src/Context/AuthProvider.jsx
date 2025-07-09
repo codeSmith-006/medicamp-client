@@ -9,31 +9,31 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import AuthContext from "./AuthContext"; // Your existing context
-import { auth } from "../Auth/Firebase/firebase.init";
+import { auth } from "../Auth/Firebase/firebase.config";
 
 const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  const register = (email, password) => {
-    setLoading(true);
+  const registerWithEmail = (email, password) => {
+    setAuthLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
   const login = (email, password) => {
-    setLoading(true);
+    setAuthLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
   const loginWithGoogle = () => {
-    setLoading(true);
+    setAuthLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
 
   const logout = () => {
-    setLoading(true);
+    setAuthLoading(true);
     return signOut(auth);
   };
 
@@ -44,7 +44,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     return () => unsubscribe();
@@ -52,8 +52,8 @@ const AuthProvider = ({ children }) => {
 
   const authInfo = {
     user,
-    loading,
-    register,
+    authLoading,
+    registerWithEmail,
     login,
     logout,
     loginWithGoogle,
