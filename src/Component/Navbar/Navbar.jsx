@@ -75,7 +75,7 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="bg-base-100 shadow-md fixed top-0 left-0 w-full z-50">
+    <div className="bg-transparent shadow-md fixed top-0 left-0 w-full z-50">
       <div className="navbar px-4 lg:px-8">
         {/* Logo + Site Name */}
         <div className="flex-1">
@@ -94,7 +94,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden text-white lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
           <AnimatedLink to="/camps">Available Camps</AnimatedLink>
           {authLoading ? (
