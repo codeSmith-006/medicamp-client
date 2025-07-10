@@ -19,7 +19,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     },
     { 
       id: 'participants', 
-      path: '/dashboard/participants', 
+      path: '/dashboard/participants-profile', 
       icon: Users, 
       label: 'Participant Profile', 
       color: 'text-green-500' 

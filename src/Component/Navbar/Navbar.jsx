@@ -2,11 +2,8 @@ import React, { use, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import { FaUserCircle } from "react-icons/fa";
 import {
   DownOutlined,
-  SettingOutlined,
-  UserOutlined,
   DashboardOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
@@ -16,11 +13,12 @@ import AnimatedLink from "./AnimatedLink";
 import "./active.css";
 import logo from "../../assets/CareCamp logo.png";
 import AuthContext from "../../Context/AuthContext";
+import axiosSecure from "../../Hooks/AxiousSecure";
+import { useQuery } from "@tanstack/react-query";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout, authLoading } = use(AuthContext);
-  // console.log("User: ", user);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -34,21 +32,32 @@ const Navbar = () => {
     exit: { y: -20, opacity: 0, transition: { duration: 0.2 } },
   };
 
-  // handle logout
   const onLogout = async () => {
     logout();
   };
 
-  // Ant Design dropdown menu items
+  // Fetch user info from API using React Query
+  const { data: dbUser, isLoading: userLoading } = useQuery({
+    queryKey: ["user", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users?email=${user.email}`);
+      return res.data;
+    },
+  });
+
   const dropdownItems = [
     {
       key: "1",
-      label: user?.displayName || "User",
+      label: (
+        <div>
+          <p className="font-semibold">{dbUser?.name || user?.displayName}</p>
+          <p className="text-xs text-gray-400">{dbUser?.role || "User"}</p>
+        </div>
+      ),
       disabled: true,
     },
-    {
-      type: "divider",
-    },
+    { type: "divider" },
     {
       key: "2",
       label: (
@@ -59,9 +68,7 @@ const Navbar = () => {
       icon: <DashboardOutlined />,
       extra: "⌘D",
     },
-    {
-      type: "divider",
-    },
+    { type: "divider" },
     {
       key: "5",
       label: (
@@ -76,19 +83,15 @@ const Navbar = () => {
 
   return (
     <div className="bg-gradient-to-r from-[#101828] via-[#1A2235] to-[#2A334D] shadow-md fixed top-0 left-0 w-full z-50">
-
       <div className="navbar justify-between px-4 lg:px-8">
         {/* Logo + Site Name */}
-        <div className="">
+        <div>
           <Link
             to="/"
             className="flex items-center gap-2 text-xl font-bold text-primary"
           >
             <img src={logo} alt="logo" className="w-8 h-8" />
-            <span
-              className="text-2xl font-extrabold bg-gradient-to-r from-[#5FACFE] via-[#24A7E8] to-[#46C1E1] 
-             bg-clip-text text-transparent tracking-wide drop-shadow-md"
-            >
+            <span className="text-2xl font-extrabold bg-gradient-to-r from-[#5FACFE] via-[#24A7E8] to-[#46C1E1] bg-clip-text text-transparent tracking-wide drop-shadow-md">
               MediCamp
             </span>
           </Link>
@@ -98,26 +101,29 @@ const Navbar = () => {
         <div className="hidden text-white lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
           <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
+
           {authLoading ? (
             <span className="loading loading-spinner loading-md"></span>
           ) : !user ? (
-            <JoinUsButton></JoinUsButton>
+            <JoinUsButton />
           ) : (
             <div className="relative">
               <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
-                <a
-                  onClick={(e) => e.preventDefault()}
-                  className="cursor-pointer"
-                >
+                <a onClick={(e) => e.preventDefault()} className="cursor-pointer">
                   <Space className="flex items-center gap-2">
                     <img
                       src={user.photoURL || "/default-avatar.png"}
                       alt="User"
                       className="w-10 h-10 rounded-full"
                     />
-                    <span className="text-sm font-medium">
-                      {user.displayName}
-                    </span>
+                    <div className="flex flex-col items-start text-white">
+                      <span className="text-sm font-medium">
+                        {userLoading ? "Loading..." : dbUser?.name || user.displayName}
+                      </span>
+                      <span className="text-xs text-gray-300">
+                        {dbUser?.role || "User"}
+                      </span>
+                    </div>
                     <DownOutlined />
                   </Space>
                 </a>
@@ -151,7 +157,7 @@ const Navbar = () => {
             <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
 
             {!user ? (
-              <JoinUsButton></JoinUsButton>
+              <JoinUsButton />
             ) : (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
@@ -160,7 +166,14 @@ const Navbar = () => {
                     alt="User"
                     className="w-10 h-10 rounded-full"
                   />
-                  <p className="text-sm font-medium">{user.displayName}</p>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">
+                      {userLoading ? "Loading..." : dbUser?.name || user.displayName}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {dbUser?.role || "User"}
+                    </span>
+                  </div>
                 </div>
                 <Link to="/dashboard" className="btn btn-ghost text-left">
                   Dashboard

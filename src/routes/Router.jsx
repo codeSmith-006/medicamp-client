@@ -57,7 +57,7 @@ const Router = createBrowserRouter([
         Component: Analytics,
       },
       {
-        path: "participants",
+        path: "participants-profile",
         Component: Participant,
       },
       {

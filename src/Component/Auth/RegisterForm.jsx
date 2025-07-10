@@ -95,14 +95,16 @@ const RegisterForm = ({ onSwitch }) => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file); // 'file' must be key name
+    formData.append("upload_preset", "carecamp_unsigned"); // replace with actual preset
 
     try {
       const res = await axios.post(
-        `https://api.imgbb.com/1/upload?key=0e04c002726999826a7cb12080231439`,
+        `https://api.cloudinary.com/v1_1/dlr8t4tyc/image/upload`,
         formData
       );
-      const imgUrl = res.data.data.url;
+
+      const imgUrl = res.data.secure_url;
       setPreview(imgUrl);
       setValue("photoUrl", imgUrl);
       toast.success("Image uploaded!");

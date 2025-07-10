@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Input, Button, Card, message, Spin } from "antd";
+import { Input, Button, Card, Spin } from "antd";
 import { motion } from "framer-motion";
 import axios from "axios";
 import axiosSecure from "../../Hooks/AxiousSecure";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const fetchLoggedInUser = async () => {
   const res = await axiosSecure.get("/users");
@@ -15,10 +16,12 @@ const Participant = () => {
   const [photoUrl, setPhotoUrl] = useState("https://i.pravatar.cc/150?img=3");
   const [uploading, setUploading] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -36,41 +39,69 @@ const Participant = () => {
   // Set default values when user is fetched
   useEffect(() => {
     if (user) {
-      console.log(user)
-      setValue("name", user.name);
-      setValue("email", user.email);
-      setPhotoUrl(user.photoUrl);
-    }
-  }, [user, setValue]);
+      console.log("User:", user);
 
-  const onSubmit = (data) => {
-    const finalProfile = { ...data, photo: photoUrl };
-    console.log("Updated Profile:", finalProfile);
-    message.success("Profile updated successfully!");
-    // API call to update the profile can be added here
-  };
+      reset({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      });
+
+      setPhotoUrl(user.photoUrl || "");
+    }
+  }, [user, reset]);
+
+  console.log("User: ", user)
+
+const onSubmit = async (data) => {
+  const finalProfile = { ...data, photoUrl };
+
+  try {
+    const res = await axiosSecure.patch("/users/participants-profile", finalProfile);
+
+    if (res.data.modifiedCount > 0) {
+      toast.success("Profile updated successfully!");
+
+      // ✅ Invalidate React Query cache to refetch updated data in Navbar
+      queryClient.invalidateQueries({ queryKey: ["user", user?.email] });
+    } else {
+      toast.info("No changes made.");
+    }
+  } catch (error) {
+    console.error("Profile update error:", error);
+    toast.error("Failed to update profile.");
+  }
+};
+
 
   const handleImageSubmit = async (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file); // Cloudinary requires this key name
+    formData.append("upload_preset", "carecamp_unsigned"); // 👈 change this
 
     try {
-      const response = await axios.post(
-        "https://api.imgbb.com/1/upload?key=0e04c002726999826a7cb12080231439",
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dlr8t4tyc/image/upload",
         formData
       );
 
-      const imageUrl = response.data.data.display_url;
-      setPhotoUrl(imageUrl);
-      message.success("Image uploaded successfully!");
+      const imageUrl = res.data?.secure_url;
+      if (imageUrl) {
+        setPhotoUrl(imageUrl); // Set preview
+        // setValue("photoUrl", imageUrl); // Uncomment if using react-hook-form
+        toast.success("Image uploaded successfully!");
+        console.log("Image URL from upload button:", imageUrl);
+      } else {
+        toast.error("Image upload failed. No URL returned.");
+      }
     } catch (error) {
-      console.error("Error uploading image:", error);
-      message.error("Image upload failed");
+      console.error("Image upload error:", error);
+      toast.error("Failed to upload image.");
     } finally {
       setUploading(false);
     }
@@ -87,7 +118,7 @@ const Participant = () => {
   if (isError) {
     return (
       <div className="text-center text-red-600 mt-10">
-        Failed to load user: {error.message}
+        Failed to load user: {error.toast}
       </div>
     );
   }
@@ -107,7 +138,7 @@ const Participant = () => {
             <img
               src={photoUrl || "https://via.placeholder.com/150"}
               alt="Profile"
-              className="w-28 h-28 rounded-full object-cover border-4 border-indigo-500"
+              className="w-28 h-28 object-cover rounded-full animated-image-border"
             />
           )}
           <div>
@@ -120,53 +151,53 @@ const Participant = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           {/* Name */}
           <div>
-            <Input
-            defaultValue={name}
+            <input
+              type="text"
               placeholder="Full Name"
-              size="large"
               {...register("name", { required: "Name is required" })}
+              className="w-full px-4 py-2 border border-[#d9d9d9] rounded-md shadow-sm text-base transition-all duration-200 focus:outline-none focus:ring-0.5 focus:ring-[#4096ff] focus:border-[#4096ff]"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              <p className="text-red-500 text-sm mt-1">{errors.name.toast}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <Input
+            <input
+              type="email"
               placeholder="Email Address"
-              size="large"
               disabled
               {...register("email")}
+              className="w-full px-4 py-2 border border-[#d9d9d9] rounded-md shadow-sm text-base bg-gray-100 cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4096ff] focus:border-[#4096ff]"
             />
           </div>
 
           {/* Phone */}
           <div>
-            <Input
+            <input
+              type="tel"
               placeholder="Phone Number (optional)"
-              size="large"
               {...register("phone", {
                 pattern: {
                   value: /^[0-9+\-\s()]{6,20}$/,
-                  message: "Invalid phone number",
+                  toast: "Invalid phone number",
                 },
               })}
+              className="w-full px-4 py-2 border border-[#d9d9d9] rounded-md shadow-sm text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4096ff] focus:border-[#4096ff]"
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.phone.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.phone.toast}</p>
             )}
           </div>
 
           {/* Upload */}
           <div>
-            <Input
+            <input
               type="file"
               accept="image/*"
-              size="large"
               onChange={handleImageSubmit}
+              className="w-full px-4 py-[7px] border border-[#d9d9d9] rounded-md shadow-sm text-base bg-white file:mr-4 file:px-4 file:py-2 file:rounded-md file:border-0 file:bg-[#4096ff] file:text-white transition-all duration-200"
             />
             <p className="text-xs text-gray-500 mt-1">
               Upload a profile photo (JPG/PNG)
