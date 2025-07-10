@@ -1,54 +1,193 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Input, Button, Card, message, Spin } from "antd";
+import { motion } from "framer-motion";
+import axios from "axios";
+import axiosSecure from "../../Hooks/AxiousSecure";
+import { useQuery } from "@tanstack/react-query";
 
-const Participants = () => {
-  const participants = [
-    { id: 1, name: 'Emma Johnson', age: 12, camp: 'Summer Adventure', status: 'Active', avatar: '👧' },
-    { id: 2, name: 'Liam Smith', age: 10, camp: 'Sports Camp', status: 'Active', avatar: '👦' },
-    { id: 3, name: 'Olivia Davis', age: 11, camp: 'Arts & Crafts', status: 'Completed', avatar: '👧' },
-    { id: 4, name: 'Noah Wilson', age: 13, camp: 'STEM Camp', status: 'Active', avatar: '👦' },
-    { id: 5, name: 'Ava Brown', age: 9, camp: 'Summer Adventure', status: 'Active', avatar: '👧' }
-  ];
+const fetchLoggedInUser = async () => {
+  const res = await axiosSecure.get("/users");
+  return res.data;
+};
+
+const Participant = () => {
+  const [photoUrl, setPhotoUrl] = useState("https://i.pravatar.cc/150?img=3");
+  const [uploading, setUploading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  // Fetch user data via TanStack Query
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["loggedInUser"],
+    queryFn: fetchLoggedInUser,
+  });
+
+  // Set default values when user is fetched
+  useEffect(() => {
+    if (user) {
+      console.log(user)
+      setValue("name", user.name);
+      setValue("email", user.email);
+      setPhotoUrl(user.photoUrl);
+    }
+  }, [user, setValue]);
+
+  const onSubmit = (data) => {
+    const finalProfile = { ...data, photo: photoUrl };
+    console.log("Updated Profile:", finalProfile);
+    message.success("Profile updated successfully!");
+    // API call to update the profile can be added here
+  };
+
+  const handleImageSubmit = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.post(
+        "https://api.imgbb.com/1/upload?key=0e04c002726999826a7cb12080231439",
+        formData
+      );
+
+      const imageUrl = response.data.data.display_url;
+      setPhotoUrl(imageUrl);
+      message.success("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      message.error("Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center text-red-600 mt-10">
+        Failed to load user: {error.message}
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">Participant Profiles</h2>
-        <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-          Add New Participant
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {participants.map((participant) => (
-          <div key={participant.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="flex items-center space-x-4">
-              <div className="text-4xl">{participant.avatar}</div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-800">{participant.name}</h3>
-                <p className="text-gray-600">Age: {participant.age}</p>
-                <p className="text-gray-600">{participant.camp}</p>
-                <div className="mt-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    participant.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {participant.status}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex space-x-2">
-              <button className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">
-                View Profile
-              </button>
-              <button className="flex-1 px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                Edit
-              </button>
-            </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-3xl mx-auto mt-10"
+    >
+      <Card bordered={false} className="shadow-xl rounded-xl">
+        <div className="flex flex-col items-center text-center space-y-4">
+          {uploading ? (
+            <Spin size="large" />
+          ) : (
+            <img
+              src={photoUrl || "https://via.placeholder.com/150"}
+              alt="Profile"
+              className="w-28 h-28 rounded-full object-cover border-4 border-indigo-500"
+            />
+          )}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {photoUrl ? "Preview Image" : "Upload Image"}
+            </h2>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+          {/* Name */}
+          <div>
+            <Input
+            defaultValue={name}
+              placeholder="Full Name"
+              size="large"
+              {...register("name", { required: "Name is required" })}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <Input
+              placeholder="Email Address"
+              size="large"
+              disabled
+              {...register("email")}
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <Input
+              placeholder="Phone Number (optional)"
+              size="large"
+              {...register("phone", {
+                pattern: {
+                  value: /^[0-9+\-\s()]{6,20}$/,
+                  message: "Invalid phone number",
+                },
+              })}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.phone.message}
+              </p>
+            )}
+          </div>
+
+          {/* Upload */}
+          <div>
+            <Input
+              type="file"
+              accept="image/*"
+              size="large"
+              onChange={handleImageSubmit}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Upload a profile photo (JPG/PNG)
+            </p>
+          </div>
+
+          {/* Submit */}
+          <Button
+            type="primary"
+            block
+            size="large"
+            htmlType="submit"
+            loading={isSubmitting}
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            Update Profile
+          </Button>
+        </form>
+      </Card>
+    </motion.div>
   );
 };
 
-export default Participants;
+export default Participant;

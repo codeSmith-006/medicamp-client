@@ -1,61 +1,113 @@
-import React from 'react';
-import { Clock, Users, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { Table, Input, Button, Tag, Space } from 'antd';
+import { motion } from 'framer-motion';
+import { SearchOutlined } from '@ant-design/icons';
 
 const Camps = () => {
-  const camps = [
-    { id: 1, name: 'Summer Adventure Camp', duration: '2 weeks', participants: 35, status: 'Active', startDate: '2024-07-15' },
-    { id: 2, name: 'Sports Excellence Camp', duration: '1 week', participants: 28, status: 'Active', startDate: '2024-07-22' },
-    { id: 3, name: 'Creative Arts Camp', duration: '3 weeks', participants: 22, status: 'Upcoming', startDate: '2024-08-01' },
-    { id: 4, name: 'STEM Innovation Camp', duration: '2 weeks', participants: 15, status: 'Active', startDate: '2024-07-20' }
+  const [searchText, setSearchText] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Placeholder camp data (replace with actual data later)
+  const campData = [
+    // {
+    //   key: '1',
+    //   campName: 'Summer Adventure',
+    //   fees: 150,
+    //   paymentStatus: 'Unpaid',
+    //   confirmationStatus: 'Pending',
+    // }
+  ];
+
+  // Filtered search
+  const filteredData = campData.filter(item =>
+    item.campName.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const columns = [
+    {
+      title: 'Camp Name',
+      dataIndex: 'campName',
+      key: 'campName',
+      render: text => <strong>{text}</strong>,
+    },
+    {
+      title: 'Fees ($)',
+      dataIndex: 'fees',
+      key: 'fees',
+    },
+    {
+      title: 'Payment Status',
+      dataIndex: 'paymentStatus',
+      key: 'paymentStatus',
+      render: status => (
+        <Tag color={status === 'Paid' ? 'green' : 'red'}>{status}</Tag>
+      ),
+    },
+    {
+      title: 'Confirmation',
+      dataIndex: 'confirmationStatus',
+      key: 'confirmationStatus',
+      render: status => (
+        <Tag color={status === 'Confirmed' ? 'blue' : 'orange'}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space>
+          {record.paymentStatus !== 'Paid' && (
+            <Button type="primary" size="small">
+              Pay
+            </Button>
+          )}
+          {record.paymentStatus !== 'Paid' && (
+            <Button danger size="small">
+              Cancel
+            </Button>
+          )}
+          {record.paymentStatus === 'Paid' && (
+            <Button size="small" className="bg-gray-200">
+              Feedback
+            </Button>
+          )}
+        </Space>
+      ),
+    },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">Registered Camps</h2>
-        <button className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
-          Create New Camp
-        </button>
+    <motion.div
+      className="max-w-6xl mx-auto mt-10 px-4"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-2xl font-semibold text-gray-800">Registered Camps</h2>
+        <Input
+          placeholder="Search camps..."
+          prefix={<SearchOutlined />}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 250 }}
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {camps.map((camp) => (
-          <div key={camp.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-800">{camp.name}</h3>
-                <div className="mt-2 flex items-center space-x-4 text-gray-600">
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    <span>{camp.duration}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-1" />
-                    <span>{camp.participants} participants</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>Starts: {camp.startDate}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  camp.status === 'Active' ? 'bg-green-100 text-green-800' : 
-                  camp.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {camp.status}
-                </span>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        pagination={{
+          current: currentPage,
+          pageSize: 5,
+          onChange: page => setCurrentPage(page),
+        }}
+        bordered
+        rowKey="id"
+      />
+    </motion.div>
   );
 };
 

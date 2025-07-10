@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import GradientButton from "../GradientButton/GradientButton";
 import { FaSignInAlt } from "react-icons/fa";
 import AuthContext from "../../Context/AuthContext";
+import { createUser } from "../../APIs/usersApi";
 
 const LoginForm = ({ onSwitch }) => {
   // navigate
@@ -18,7 +19,6 @@ const LoginForm = ({ onSwitch }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,14 +42,41 @@ const LoginForm = ({ onSwitch }) => {
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+
     try {
-      await loginWithGoogle();
-      toast.success("Logged in with Google successfully!");
-      navigate("/");
+      const result = await loginWithGoogle();
+      const user = result?.user;
+
+      if (user) {
+        const { displayName, email, photoURL } = user;
+
+        const payload = {
+          name: displayName,
+          email,
+          photoUrl: photoURL,
+          role: "user", // default role
+        };
+
+        try {
+          const res = await createUser(payload);
+          console.log("User sync result:", res);
+
+          if (res?.insertedId || res?.acknowledged) {
+            toast.success("Registered successfully!");
+          } else {
+            toast.info("Welcome back!");
+          }
+        } catch (error) {
+          console.error("Error while saving user to DB:", error);
+          toast.error("User sync failed.");
+        }
+
+        toast.success("Logged in with Google successfully!");
+        navigate("/");
+      }
     } catch (error) {
       console.error("Google login error:", error);
       toast.error(error.message || "Google login failed. Please try again.");
-      setIsGoogleLoading(false);
     } finally {
       setIsGoogleLoading(false);
     }

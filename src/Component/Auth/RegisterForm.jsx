@@ -161,7 +161,6 @@ const RegisterForm = ({ onSwitch }) => {
     }
   };
 
-  // handle login with google
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
@@ -170,11 +169,34 @@ const RegisterForm = ({ onSwitch }) => {
       console.log("Google login success:", result.user);
 
       if (result.user) {
+        const { displayName, email, photoURL } = result.user;
+
+        // Prepare payload for backend
+        const payload = {
+          name: displayName,
+          email,
+          photoUrl: photoURL,
+          role: "user", // default role
+        };
+
+        try {
+          const response = await createUser(payload);
+          console.log("User creation result:", response);
+
+          if (response?.insertedId || response?.acknowledged) {
+            toast.success("Registered successfully!");
+          } else {
+            toast.info("Welcome back!");
+          }
+        } catch (error) {
+          console.error("Error while sending user to backend:", error);
+          toast.error("Failed to save user to database.");
+        }
+
         toast.success("Logged in with Google!");
         setGoogleLoading(false);
         navigate("/");
       }
-      // Optional: redirect or further processing
     } catch (error) {
       console.error("Google login error:", error);
       setGoogleLoading(false);

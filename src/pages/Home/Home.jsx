@@ -4,7 +4,9 @@ import BannerCarousel from "../../Component/Banner/BannerCarousel";
 const Home = () => {
   return (
     <div>
-      <BannerCarousel></BannerCarousel>
+      <div className="pt-16">
+        <BannerCarousel></BannerCarousel>
+      </div>
     </div>
   );
 };

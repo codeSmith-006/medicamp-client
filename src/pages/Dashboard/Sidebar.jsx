@@ -12,28 +12,28 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const sidebarItems = [
     { 
       id: 'analytics', 
-      path: '/analytics', 
+      path: '/dashboard/analytics', 
       icon: TrendingUp, 
       label: 'Analytics', 
       color: 'text-blue-500' 
     },
     { 
       id: 'participants', 
-      path: '/participants', 
+      path: '/dashboard/participants', 
       icon: Users, 
       label: 'Participant Profile', 
       color: 'text-green-500' 
     },
     { 
       id: 'camps', 
-      path: '/camps', 
+      path: '/dashboard/camps', 
       icon: Calendar, 
       label: 'Registered Camps', 
       color: 'text-purple-500' 
     },
     { 
       id: 'payments', 
-      path: '/payments', 
+      path: '/dashboard/payments', 
       icon: CreditCard, 
       label: 'Payment History', 
       color: 'text-orange-500' 
@@ -41,7 +41,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   ];
 
   return (
-    <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+    <div className={`fixed inset-y-0 left-0 z-10 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
       sidebarOpen ? 'translate-x-0' : '-translate-x-full'
     }`}>
       <div className="p-6">
