@@ -1,37 +1,48 @@
-import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import { Outlet } from 'react-router-dom';
-import Navbar from '../../Component/Navbar/Navbar';
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import Navbar from "../../Component/Navbar/Navbar";
+import LoadingSpinner from "../../Component/LoadingSpinner/LoadingSpinner";
+import useCurrentUser from "../../Hooks/useController";
+import AuthContext from "../../Context/AuthContext";
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const { user, authLoading } = useContext(AuthContext); // 👈 Firebase auth state
+  const { currentUser, isLoading } = useCurrentUser();   // 👈 DB user info
+
+  // 🔁 Redirect to login if user is logged out (auth state)
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/join-us");
+    }
+  }, [authLoading, user, navigate]);
+
+  // 🔄 While Firebase is checking auth OR DB is fetching user role
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Global Navbar - Fixed */}
       <Navbar />
-
-      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-      {/* Main Content Area - Shifted down due to Navbar height */}
       <div
         className={`transition-all duration-300 pt-16 ${
-          sidebarOpen ? 'lg:ml-64' : 'ml-0'
+          sidebarOpen ? "lg:ml-64" : "ml-0"
         }`}
       >
-        {/* Header (inside dashboard) */}
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-        {/* Page Content */}
         <main className="p-6">
           <Outlet>{children}</Outlet>
         </main>
       </div>
-
-      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"

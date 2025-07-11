@@ -15,7 +15,10 @@ import Layout from "../pages/Dashboard/Dashboard";
 import AvailableCamps from "../pages/AvailableCamps/AvailableCamps";
 import Participant from "../pages/Dashboard/Participants";
 import Organizer from "../pages/Dashboard/Organizer";
+import DashBoardWelcome from "../pages/Dashboard/DashboardWelcome";
 import RoleBasedRoute from "./roleBasedRoute";
+import AddCamps from "../pages/Dashboard/AddCamp";
+import AddCamp from "../pages/Dashboard/AddCamp";
 
 const Router = createBrowserRouter([
   {
@@ -52,7 +55,7 @@ const Router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Analytics,
+        Component: DashBoardWelcome,
       },
 
       // analytics for users role
@@ -66,7 +69,7 @@ const Router = createBrowserRouter([
         ],
       },
 
-      // profile for participants
+      // profile for user role
       {
         element: <RoleBasedRoute allowedRoles={["user"]} />,
         children: [
@@ -77,7 +80,7 @@ const Router = createBrowserRouter([
         ],
       },
 
-      // profile for organizer
+      // profile for admin role
       {
         element: <RoleBasedRoute allowedRoles={["admin"]} />,
         children: [
@@ -88,13 +91,37 @@ const Router = createBrowserRouter([
         ],
       },
 
+      // camps for for user role
       {
-        path: "camps",
-        Component: Camps,
+        element: <RoleBasedRoute allowedRoles={["user"]} />,
+        children: [
+          {
+            path: "participants/camps",
+            Component: Camps,
+          },
+        ],
       },
+
+      // payments for for user role
       {
-        path: "payments",
-        Component: Payments,
+        element: <RoleBasedRoute allowedRoles={["user"]} />,
+        children: [
+          {
+            path: "participants/payments",
+            Component: Payments,
+          },
+        ],
+      },
+
+      // add camp for admin 
+            {
+        element: <RoleBasedRoute allowedRoles={["admin"]} />,
+        children: [
+          {
+            path: "/dashboard/organizer/add-camp",
+            Component: AddCamp,
+          },
+        ],
       },
     ],
   },

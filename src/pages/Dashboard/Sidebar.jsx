@@ -1,12 +1,30 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { X, Users, Calendar, CreditCard, TrendingUp } from "lucide-react";
+import {
+  X,
+  Users,
+  Calendar,
+  CreditCard,
+  TrendingUp,
+  User,
+  PlusCircle,
+  ClipboardList,
+} from "lucide-react";
 import useCurrentUser from "../../Hooks/useController";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { currentUser, isLoading: userLoading } = useCurrentUser();
   console.log("Current user: ", currentUser, "Loading: ", userLoading);
   const sidebarItems = [
+    // Shared (if any)
+    {
+      id: "profile",
+      path: `/dashboard/${currentUser?.role == 'admin' ? 'organizer' : 'participants'}/profile`,
+      icon: User,
+      label: "Profile",
+      color: "text-green-500",
+    },
+
     // For user
     ...(currentUser?.role === "user"
       ? [
@@ -19,32 +37,47 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           },
           {
             id: "camps",
-            path: "/dashboard/camps",
+            path: "/dashboard/participants/camps",
             icon: Calendar,
             label: "Registered Camps",
             color: "text-purple-500",
           },
           {
             id: "payments",
-            path: "/dashboard/payments",
+            path: "/dashboard/participants/payments",
             icon: CreditCard,
             label: "Payment History",
             color: "text-orange-500",
           },
         ]
       : []),
-    // currentUser?.role == "admin" ? "organizer" : "participants"
 
-    // For both
-    {
-      id: "participants",
-      path: `/dashboard/${
-        currentUser?.role == "admin" ? "organizer" : "participants"
-      }/profile`,
-      icon: Users,
-      label: "Participant Profile",
-      color: "text-green-500",
-    },
+    // For organizer (admin)
+    ...(currentUser?.role === "admin"
+      ? [
+          {
+            id: "addCamp",
+            path: "/dashboard/organizer/add-camp",
+            icon: PlusCircle,
+            label: "Add A Camp",
+            color: "text-blue-600",
+          },
+          {
+            id: "manageCamps",
+            path: "/dashboard/organizer/manage-camps",
+            icon: ClipboardList,
+            label: "Manage Camps",
+            color: "text-purple-600",
+          },
+          {
+            id: "registeredCamps",
+            path: "/dashboard/organizer/registered-camps",
+            icon: Users,
+            label: "Manage Registered Camps",
+            color: "text-teal-600",
+          },
+        ]
+      : []),
   ];
 
   return (
