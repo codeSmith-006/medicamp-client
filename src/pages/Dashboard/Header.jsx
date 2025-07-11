@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Menu } from "lucide-react";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import { useQuery } from "@tanstack/react-query";
+import AuthContext from "../../Context/AuthContext"; // ✅ import context
+import LoadingSpinner from "../../Component/LoadingSpinner/LoadingSpinner";
+// import LoadingSpinner from "../LoadingSpinner"; // optional spinner
 
 const fetchCurrentUser = async () => {
   const res = await axiosSecure.get("/users");
@@ -9,14 +12,19 @@ const fetchCurrentUser = async () => {
 };
 
 const Header = ({ sidebarOpen, setSidebarOpen }) => {
+  const { user, authLoading } = useContext(AuthContext); // ✅ get auth info
+
   const {
-    data: user,
+    data: currentUser,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
+    enabled: !!user?.email && !authLoading, // ✅ wait until auth is ready
   });
+
+  if (authLoading || isLoading) return <LoadingSpinner />;
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -52,7 +60,10 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
           </div>
 
-
+          {/* Example usage */}
+          <div className="text-sm text-gray-600">
+            Welcome, {currentUser?.name || "Guest"}
+          </div>
         </div>
       </div>
     </header>

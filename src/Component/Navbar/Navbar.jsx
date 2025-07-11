@@ -41,7 +41,7 @@ const Navbar = () => {
     queryKey: ["user", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/users?email=${user.email}`);
+      const res = await axiosSecure.get(`/users`);
       return res.data;
     },
   });
@@ -112,7 +112,7 @@ const Navbar = () => {
                 <a onClick={(e) => e.preventDefault()} className="cursor-pointer">
                   <Space className="flex items-center gap-2">
                     <img
-                      src={user.photoURL || "/default-avatar.png"}
+                      src={dbUser?.photo || user?.photoURL}
                       alt="User"
                       className="w-10 h-10 rounded-full"
                     />

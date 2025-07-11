@@ -12,7 +12,7 @@ const fetchLoggedInUser = async () => {
   return res.data;
 };
 
-const Participant = () => {
+const Organizer = () => {
   const [photoUrl, setPhotoUrl] = useState("https://i.pravatar.cc/150?img=3");
   const [uploading, setUploading] = useState(false);
 
@@ -143,7 +143,7 @@ const onSubmit = async (data) => {
           )}
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
-              {photoUrl ? "Participants Preview Image" : "Upload Image"}
+              {photoUrl ? "Organizer Preview Image" : "Upload Image"}
             </h2>
           </div>
         </div>
@@ -221,4 +221,4 @@ const onSubmit = async (data) => {
   );
 };
 
-export default Participant;
+export default Organizer;

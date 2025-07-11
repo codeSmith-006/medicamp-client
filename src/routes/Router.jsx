@@ -14,6 +14,8 @@ import Payments from "../pages/Dashboard/Payments";
 import Layout from "../pages/Dashboard/Dashboard";
 import AvailableCamps from "../pages/AvailableCamps/AvailableCamps";
 import Participant from "../pages/Dashboard/Participants";
+import Organizer from "../pages/Dashboard/Organizer";
+import RoleBasedRoute from "./roleBasedRoute";
 
 const Router = createBrowserRouter([
   {
@@ -25,9 +27,9 @@ const Router = createBrowserRouter([
         Component: Home,
       },
       {
-        path: 'available-camps',
-        Component: AvailableCamps
-      }
+        path: "available-camps",
+        Component: AvailableCamps,
+      },
     ],
   },
 
@@ -52,14 +54,40 @@ const Router = createBrowserRouter([
         index: true,
         Component: Analytics,
       },
+
+      // analytics for users role
       {
-        path: "analytics",
-        Component: Analytics,
+        element: <RoleBasedRoute allowedRoles={["user"]} />,
+        children: [
+          {
+            path: "participants/analytics",
+            Component: Analytics,
+          },
+        ],
       },
+
+      // profile for participants
       {
-        path: "participants-profile",
-        Component: Participant,
+        element: <RoleBasedRoute allowedRoles={["user"]} />,
+        children: [
+          {
+            path: "participants/profile",
+            Component: Participant,
+          },
+        ],
       },
+
+      // profile for organizer
+      {
+        element: <RoleBasedRoute allowedRoles={["admin"]} />,
+        children: [
+          {
+            path: "organizer/profile",
+            Component: Organizer,
+          },
+        ],
+      },
+
       {
         path: "camps",
         Component: Camps,
