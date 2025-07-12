@@ -10,6 +10,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 // import useAuth from "../../Hooks/useAuth";
 import UpdateCampModal from "./UpdateCampModal";
 import useCurrentUser from "../../Hooks/useController";
+import axiosSecure from "../../Hooks/AxiousSecure";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -18,27 +19,36 @@ const fadeInUp = {
 };
 
 const ManageCamps = () => {
-  const { user } = useCurrentUser();
+  const { currentUser } = useCurrentUser();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: camps = [], isLoading, refetch } = useQuery({
-    queryKey: ["organizer-camps", user?.email],
+  console.log("enable: ", currentUser)
+
+  const {
+    data: camps = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["organizer-camps", currentUser?.email],
     queryFn: async () => {
-      const res = await axios.get(`http://localhost:5000/camps`);
+      const res = await axiosSecure.get(`camps`);
       return res.data;
     },
-    enabled: !!user?.email,
+    enabled: !!currentUser?.email,
   });
-
+  console.log("loading: ", isLoading)
+  console.log("camp data: ", camps);
   const filteredCamps = useMemo(() => {
     return camps.filter(
       (camp) =>
         camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         camp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        camp.healthcareProfessional.toLowerCase().includes(searchTerm.toLowerCase())
+        camp.healthcareProfessional
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
   }, [camps, searchTerm]);
 

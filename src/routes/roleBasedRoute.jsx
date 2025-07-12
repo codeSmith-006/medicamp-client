@@ -5,9 +5,9 @@ import useCurrentUser from "../Hooks/useController";
 
 const RoleBasedRoute = ({ allowedRoles = [] }) => {
   const { currentUser, isLoading } = useCurrentUser();
-  console.log("Role: ", allowedRoles);
-  console.log("Current users role: ", currentUser?.role)
-  console.log("Permission: ", allowedRoles.includes(currentUser?.role))
+  // console.log("Role: ", allowedRoles);
+  // console.log("Current users role: ", currentUser?.role)
+  // console.log("Permission: ", allowedRoles.includes(currentUser?.role))
 
   if (isLoading) {
     return <LoadingSpinner />;

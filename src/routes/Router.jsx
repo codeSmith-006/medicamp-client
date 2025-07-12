@@ -19,6 +19,7 @@ import DashBoardWelcome from "../pages/Dashboard/DashboardWelcome";
 import RoleBasedRoute from "./roleBasedRoute";
 import AddCamps from "../pages/Dashboard/AddCamp";
 import AddCamp from "../pages/Dashboard/AddCamp";
+import ManageCamps from "../pages/Dashboard/ManageCamps";
 
 const Router = createBrowserRouter([
   {
@@ -113,13 +114,24 @@ const Router = createBrowserRouter([
         ],
       },
 
-      // add camp for admin 
-            {
+      // add camp for admin
+      {
         element: <RoleBasedRoute allowedRoles={["admin"]} />,
         children: [
           {
             path: "/dashboard/organizer/add-camp",
             Component: AddCamp,
+          },
+        ],
+      },
+
+      // manage camp for admin
+      {
+        element: <RoleBasedRoute allowedRoles={["admin"]} />,
+        children: [
+          {
+            path: "/dashboard/organizer/manage-camps",
+            Component: ManageCamps,
           },
         ],
       },

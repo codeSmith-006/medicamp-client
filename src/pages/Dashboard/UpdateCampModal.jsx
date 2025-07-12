@@ -5,6 +5,7 @@ import TextArea from "antd/es/input/TextArea";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { motion } from "framer-motion";
+import dayjs from "dayjs";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -21,7 +22,7 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
     defaultValues: {
       campName: camp.campName,
       campFees: camp.campFees,
-      dateTime: camp.dateTime ? new Date(camp.dateTime) : null,
+      dateTime: camp.dateTime ? dayjs(camp.dateTime) : null,
       location: camp.location,
       healthcareProfessional: camp.healthcareProfessional,
       description: camp.description,
@@ -39,8 +40,10 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
         dateTime: data.dateTime ? data.dateTime.toISOString() : null,
       };
 
-      // PUT request to update camp
-      await axios.put(`http://localhost:5000/camps/${camp._id}`, updateData);
+      console.log("updated data: ", updateData)
+
+      // patch request to update camp
+      await axios.patch(`http://localhost:5000/camps/${camp._id}`, updateData);
 
       toast.success("Camp updated successfully");
       onUpdated();
@@ -228,24 +231,23 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
             />
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-4 mt-4">
+          <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
-              className="btn btn-outline"
               onClick={onClose}
               disabled={loading || isSubmitting}
+              className="px-5 py-2 rounded-2xl border cursor-pointer border-gray-300 bg-white text-gray-800 hover:bg-gray-100 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
               Cancel
             </button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading || isSubmitting}
-              className="btn btn-primary"
+
+            <button
+              type="submit"
+              disabled={loading || isSubmitting}
+              className="px-6 py-2 rounded-2xl bg-blue-500 cursor-pointer text-white hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
-              Update Camp
-            </Button>
+              {loading || isSubmitting ? "Updating..." : "Update Camp"}
+            </button>
           </div>
         </form>
       </motion.div>

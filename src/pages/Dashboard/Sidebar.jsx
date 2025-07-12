@@ -14,7 +14,7 @@ import useCurrentUser from "../../Hooks/useController";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { currentUser, isLoading: userLoading } = useCurrentUser();
-  console.log("Current user: ", currentUser, "Loading: ", userLoading);
+  // console.log("Current user: ", currentUser, "Loading: ", userLoading);
   const sidebarItems = [
     // Shared (if any)
     {
@@ -84,7 +84,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 z-50 md:z-10 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >

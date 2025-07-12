@@ -11,7 +11,7 @@ let accessToken = null;
 // get access token
 export let setAccessToken = (token) => {
   accessToken = token;
-  console.log(accessToken);
+  // console.log(accessToken);
 };
 
 // implementing axios interceptor
