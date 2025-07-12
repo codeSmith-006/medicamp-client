@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const { user, authLoading } = useContext(AuthContext); // 👈 Firebase auth state
-  const { currentUser, isLoading } = useCurrentUser();   // 👈 DB user info
+  const { currentUser, isLoading } = useCurrentUser(); // 👈 DB user info
 
   // 🔁 Redirect to login if user is logged out (auth state)
   useEffect(() => {
@@ -30,11 +30,22 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
       <Navbar />
+
+      {/* Backdrop first */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar above the backdrop */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
       <div
-        className={`transition-all duration-300 pt-16 ${
+        className={`transition-all duration-300 pt-16 relative ${
           sidebarOpen ? "lg:ml-64" : "ml-0"
         }`}
       >
@@ -43,12 +54,6 @@ const Layout = ({ children }) => {
           <Outlet>{children}</Outlet>
         </main>
       </div>
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 };

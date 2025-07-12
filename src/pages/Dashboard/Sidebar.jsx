@@ -19,7 +19,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     // Shared (if any)
     {
       id: "profile",
-      path: `/dashboard/${currentUser?.role == 'admin' ? 'organizer' : 'participants'}/profile`,
+      path: `/dashboard/${
+        currentUser?.role == "admin" ? "organizer" : "participants"
+      }/profile`,
       icon: User,
       label: "Profile",
       color: "text-green-500",
@@ -82,7 +84,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-10 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -102,6 +104,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             <NavLink
               key={item.id}
               to={item.path}
+              onClick={() => {
+                // Auto-close sidebar ONLY on small screens
+                if (window.innerWidth < 1024) {
+                  setSidebarOpen(false);
+                }
+              }}
               className={({ isActive }) =>
                 `w-full flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
                   isActive

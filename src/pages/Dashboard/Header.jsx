@@ -60,10 +60,6 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
           </div>
 
-          {/* Example usage */}
-          <div className="text-sm text-gray-600">
-            Welcome, {currentUser?.name || "Guest"}
-          </div>
         </div>
       </div>
     </header>
