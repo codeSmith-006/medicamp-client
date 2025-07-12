@@ -20,6 +20,8 @@ import RoleBasedRoute from "./roleBasedRoute";
 import AddCamps from "../pages/Dashboard/AddCamp";
 import AddCamp from "../pages/Dashboard/AddCamp";
 import ManageCamps from "../pages/Dashboard/ManageCamps";
+import PrivateRoutes from "../routes/PrivateRoutes";
+import CampDetails from "../pages/AvailableCamps/CampDetails";
 
 const Router = createBrowserRouter([
   {
@@ -32,7 +34,18 @@ const Router = createBrowserRouter([
       },
       {
         path: "available-camps",
-        Component: AvailableCamps,
+        children: [
+          {
+            index: true,
+            Component: AvailableCamps,
+          },
+          {
+            path: "camps/:id", 
+            element: <PrivateRoutes>
+              <CampDetails></CampDetails>
+            </PrivateRoutes>
+          },
+        ],
       },
     ],
   },
