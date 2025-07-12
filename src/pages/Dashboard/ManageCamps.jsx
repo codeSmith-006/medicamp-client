@@ -52,7 +52,7 @@ const ManageCamps = () => {
     );
   }, [camps, searchTerm]);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const totalPages = Math.ceil(filteredCamps.length / itemsPerPage);
   const paginatedCamps = filteredCamps.slice(
     (currentPage - 1) * itemsPerPage,
