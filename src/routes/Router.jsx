@@ -23,6 +23,7 @@ import ManageCamps from "../pages/Dashboard/ManageCamps";
 import PrivateRoutes from "../routes/PrivateRoutes";
 import CampDetails from "../pages/AvailableCamps/CampDetails";
 import ManageRegisteredParticipants from "../pages/Dashboard/ManageRegisteredParticiapnts";
+import PaymentSuccess from "../pages/Dashboard/PaymentSuccess";
 
 const Router = createBrowserRouter([
   {
@@ -49,6 +50,14 @@ const Router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        path: "/payment-success",
+        element: (
+          <PrivateRoutes>
+            <PaymentSuccess></PaymentSuccess>
+          </PrivateRoutes>
+        ),
       },
     ],
   },
