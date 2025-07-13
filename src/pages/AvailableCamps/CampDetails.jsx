@@ -18,6 +18,7 @@ import { ArrowLeftOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useForm, Controller } from "react-hook-form";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import useCurrentUser from "../../Hooks/useController";
+import toast from "react-hot-toast";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -35,7 +36,9 @@ const CampDetails = () => {
 
   // Replace this with your actual user auth logic
   // Example user object with profile data
-  const { currentUser, isLoading: userLoading } = useCurrentUser();
+  const { currentUser, isLoading } = useCurrentUser();
+  console.log("current  user: ", currentUser);
+  console.log("user loading: ", isLoading);
 
   const [camp, setCamp] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,10 +75,10 @@ const CampDetails = () => {
     };
 
     // ✅ Only run fetch when user is ready and id exists
-    if (!userLoading && currentUser && id) {
+    if (!isLoading && currentUser && id) {
       fetchCamp();
     }
-  }, [userLoading, currentUser, id]);
+  }, [isLoading, currentUser, id]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -99,23 +102,43 @@ const CampDetails = () => {
     try {
       // Save registration (simulate endpoint)
       const registrationData = {
-        id,
+        campId: id, // Assuming 'id' is the camp ID
         participantName: data.participantName,
         participantEmail: data.participantEmail,
+        loggedUserEmail: currentUser.email,
         age: data.age,
         phone: data.phone,
         gender: data.gender,
         emergencyContact: data.emergencyContact,
+
+        // ✅ New required fields
+        paymentStatus: "unpaid", // Default status
+        confirmationStatus: "pending", // Will be confirmed after payment
+        transactionId: null, // Will be filled after Stripe payment
+        registeredAt: new Date().toISOString(), // Registration timestamp
+
+        // ✅ Camp Info Snapshot
+        campName: camp.campName,
+        image: camp.image,
+        campFees: camp.campFees,
+        dateTime: camp.dateTime,
+        location: camp.location,
+        healthcareProfessional: camp.healthcareProfessional,
+        description: camp.description,
+        participantCount: camp.participantCount,
       };
 
-      await axios.post("http://localhost:5000/registrations", registrationData);
+      await axios.post(
+        "http://localhost:5000/registered-participant",
+        registrationData
+      );
 
       // Increment participant count
       await axios.patch(
         `http://localhost:5000/camps/${id}/increment-participants`
       );
 
-      message.success("Successfully joined the camp!");
+      toast.success("Successfully joined the camp!");
       setModalVisible(false);
       // Optionally refetch camp data to update participant count
       setCamp((prev) => ({
@@ -123,13 +146,13 @@ const CampDetails = () => {
         participantCount: (prev?.participantCount || 0) + 1,
       }));
     } catch (error) {
-      message.error("Failed to join camp. Please try again.");
+      toast.error("Failed to join camp. Please try again.");
     } finally {
       setRegistering(false);
     }
   };
 
-  if (loading || userLoading)
+  if (loading || isLoading)
     return (
       <div className="flex justify-center items-center h-96">
         <Spin size="large" />

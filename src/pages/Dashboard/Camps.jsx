@@ -1,75 +1,146 @@
-import React, { useState } from 'react';
-import { Table, Input, Button, Tag, Space } from 'antd';
-import { motion } from 'framer-motion';
-import { SearchOutlined } from '@ant-design/icons';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Table,
+  Input,
+  Button,
+  Tag,
+  Space,
+  Modal,
+  message,
+  Rate,
+  Form,
+} from "antd";
+import { SearchOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
+import axiosSecure from "../../Hooks/AxiousSecure"; // your secure axios instance
 
-const Camps = () => {
-  const [searchText, setSearchText] = useState('');
+const { confirm } = Modal;
+
+const RegisteredCamps = () => {
+  const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [selectedCamp, setSelectedCamp] = useState(null);
+  const [form] = Form.useForm();
 
-  // Placeholder camp data (replace with actual data later)
-  const campData = [
-    // {
-    //   key: '1',
-    //   campName: 'Summer Adventure',
-    //   fees: 150,
-    //   paymentStatus: 'Unpaid',
-    //   confirmationStatus: 'Pending',
-    // }
-  ];
+  const queryClient = useQueryClient();
 
-  // Filtered search
-  const filteredData = campData.filter(item =>
-    item.campName.toLowerCase().includes(searchText.toLowerCase())
+  const {
+    data: registeredCamps = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["registeredCamps"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/registered-participant");
+      return res.data;
+    },
+  });
+
+  console.log("Registered camps: ", registeredCamps);
+
+  const filteredData = registeredCamps.filter((item) =>
+    item.campName?.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const handleCancelRegistration = (id) => {
+    confirm({
+      title: "Are you sure you want to cancel this registration?",
+      icon: <ExclamationCircleOutlined />,
+      onOk: async () => {
+        try {
+          await axiosSecure.delete(`/registrations/${id}`);
+          message.success("Registration cancelled");
+          queryClient.invalidateQueries({ queryKey: ["registeredCamps"] });
+        } catch (err) {
+          message.error("Failed to cancel registration");
+        }
+      },
+    });
+  };
+
+  const handleOpenFeedback = (record) => {
+    setSelectedCamp(record);
+    form.resetFields();
+    setFeedbackModalVisible(true);
+  };
+
+  const handleSubmitFeedback = async (values) => {
+    try {
+      const payload = {
+        campId: selectedCamp.campId,
+        feedback: values.feedback,
+        rating: values.rating,
+      };
+      await axiosSecure.post("/feedback", payload);
+      message.success("Thank you for your feedback!");
+      setFeedbackModalVisible(false);
+    } catch (error) {
+      message.error("Failed to submit feedback");
+    }
+  };
 
   const columns = [
     {
-      title: 'Camp Name',
-      dataIndex: 'campName',
-      key: 'campName',
-      render: text => <strong>{text}</strong>,
+      title: "Camp Name",
+      dataIndex: "campName",
+      key: "campName",
+      render: (text) => <strong>{text}</strong>,
     },
     {
-      title: 'Fees ($)',
-      dataIndex: 'fees',
-      key: 'fees',
+      title: "Fees",
+      dataIndex: "campFees",
+      key: "campFees",
+      render: (fee) => (fee === 0 ? "Free" : `BDT ${fee}`),
     },
     {
-      title: 'Payment Status',
-      dataIndex: 'paymentStatus',
-      key: 'paymentStatus',
-      render: status => (
-        <Tag color={status === 'Paid' ? 'green' : 'red'}>{status}</Tag>
+      title: "Participant",
+      dataIndex: "participantName",
+      key: "participantName",
+    },
+    {
+      title: "Payment Status",
+      dataIndex: "paymentStatus",
+      key: "paymentStatus",
+      render: (status) => (
+        <Tag color={status === "paid" ? "green" : "red"}>{status}</Tag>
       ),
     },
     {
-      title: 'Confirmation',
-      dataIndex: 'confirmationStatus',
-      key: 'confirmationStatus',
-      render: status => (
-        <Tag color={status === 'Confirmed' ? 'blue' : 'orange'}>
-          {status}
-        </Tag>
+      title: "Confirmation",
+      dataIndex: "confirmationStatus",
+      key: "confirmationStatus",
+      render: (status) => (
+        <Tag color={status === "confirmed" ? "blue" : "orange"}>{status}</Tag>
       ),
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (_, record) => (
         <Space>
-          {record.paymentStatus !== 'Paid' && (
-            <Button type="primary" size="small">
-              Pay
-            </Button>
+          {record.paymentStatus === "unpaid" && (
+            <Space>
+              <Button type="primary" size="small">
+                Pay
+              </Button>
+              <Button
+                danger
+                size="small"
+                onClick={() => handleCancelRegistration(record._id)}
+              >
+                Cancel
+              </Button>
+            </Space>
           )}
-          {record.paymentStatus !== 'Paid' && (
-            <Button danger size="small">
-              Cancel
-            </Button>
-          )}
-          {record.paymentStatus === 'Paid' && (
-            <Button size="small" className="bg-gray-200">
+          {record.paymentStatus === "paid" && (
+            <Button
+              size="small"
+              className="bg-gray-200"
+              onClick={() => handleOpenFeedback(record)}
+            >
               Feedback
             </Button>
           )}
@@ -80,15 +151,17 @@ const Camps = () => {
 
   return (
     <motion.div
-      className="max-w-6xl mx-auto mt-10 px-4"
+      className="max-w-7xl mx-auto mt-10 px-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
       <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-800">Registered Camps</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">
+          📋 Registered Camps
+        </h2>
         <Input
-          placeholder="Search camps..."
+          placeholder="Search by camp name..."
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -101,14 +174,47 @@ const Camps = () => {
         dataSource={filteredData}
         pagination={{
           current: currentPage,
-          pageSize: 5,
-          onChange: page => setCurrentPage(page),
+          pageSize: 10,
+          onChange: (page) => setCurrentPage(page),
         }}
+        rowKey="_id"
         bordered
-        rowKey="id"
+        loading={isLoading}
       />
+
+      <Modal
+        open={feedbackModalVisible}
+        onCancel={() => setFeedbackModalVisible(false)}
+        footer={null}
+        title="Leave Feedback"
+      >
+        <Form layout="vertical" form={form} onFinish={handleSubmitFeedback}>
+          <Form.Item
+            name="rating"
+            label="Rating"
+            rules={[{ required: true, message: "Please provide a rating" }]}
+          >
+            <Rate />
+          </Form.Item>
+          <Form.Item
+            name="feedback"
+            label="Feedback"
+            rules={[{ required: true, message: "Feedback is required" }]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder="Write your feedback here..."
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button htmlType="submit" type="primary" block>
+              Submit Feedback
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </motion.div>
   );
 };
 
-export default Camps;
+export default RegisteredCamps;

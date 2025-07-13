@@ -70,8 +70,6 @@ const LoginForm = ({ onSwitch }) => {
           console.error("Error while saving user to DB:", error);
           toast.error("User sync failed.");
         }
-
-        toast.success("Logged in with Google successfully!");
         navigate("/");
       }
     } catch (error) {
