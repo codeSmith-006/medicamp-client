@@ -77,7 +77,7 @@ const ManageRegisteredParticipants = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/delete-registration/${id}`);
+        await axiosSecure.delete(`http://localhost:5000/delete-registration/${id}`);
         toast.success("Registration cancelled");
         refetch();
       } catch {

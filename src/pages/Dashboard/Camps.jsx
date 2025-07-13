@@ -14,6 +14,7 @@ import {
 import { SearchOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import axiosSecure from "../../Hooks/AxiousSecure"; // your secure axios instance
+import useStripePayment from "../../Hooks/useSriptePayment";
 
 const { confirm } = Modal;
 
@@ -23,6 +24,7 @@ const RegisteredCamps = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [form] = Form.useForm();
+  const {mutate: handlePayment} = useStripePayment();
 
   const queryClient = useQueryClient();
 
@@ -123,7 +125,18 @@ const RegisteredCamps = () => {
         <Space>
           {record.paymentStatus === "unpaid" && (
             <Space>
-              <Button type="primary" size="small">
+              <Button
+                type="primary"
+                size="small"
+                onClick={() =>
+                  handlePayment({
+                    campTitle: record.campName,
+                    campId: record.campId,
+                    amount: record.campFees,
+                    userEmail: record.participantEmail,
+                  })
+                }
+              >
                 Pay
               </Button>
               <Button

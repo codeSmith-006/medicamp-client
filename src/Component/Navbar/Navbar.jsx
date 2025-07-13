@@ -112,7 +112,7 @@ const Navbar = () => {
                 <a onClick={(e) => e.preventDefault()} className="cursor-pointer">
                   <Space className="flex items-center gap-2">
                     <img
-                      src={dbUser?.photo || user?.photoURL}
+                      src={dbUser?.photoUrl || user?.photoURL}
                       alt="User"
                       className="w-10 h-10 rounded-full"
                     />

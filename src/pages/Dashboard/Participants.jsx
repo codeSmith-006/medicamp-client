@@ -143,7 +143,7 @@ const onSubmit = async (data) => {
           )}
           <div>
             <h2 className="text-xl font-semibold text-gray-800">
-              {photoUrl ? "Participants Preview Image" : "Upload Image"}
+              {photoUrl ? "Preview Image" : "Upload Image"}
             </h2>
           </div>
         </div>
