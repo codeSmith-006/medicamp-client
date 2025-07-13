@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { use, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Button, Card, DatePicker, InputNumber, Spin } from "antd";
 import toast from "react-hot-toast";
@@ -6,11 +6,13 @@ import toast from "react-hot-toast";
 import TextArea from "antd/es/input/TextArea";
 import { motion } from "framer-motion";
 import axios from "axios";
+import AuthContext from "../../Context/AuthContext";
 
 const AddCamp = () => {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const imageInputRef = useRef(null);
+  const {user} = use(AuthContext);
 
   // fade up animation
   const fadeInUp = {
@@ -63,7 +65,9 @@ const AddCamp = () => {
     }
 
     const campData = {
+      addedBy: user?.email,
       campName: data.campName,
+
       image: imageUrl,
       campFees: Number(data.campFees),
       dateTime: data.dateTime ? data.dateTime.toISOString() : null,

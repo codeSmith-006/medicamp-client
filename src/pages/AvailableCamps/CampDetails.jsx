@@ -126,6 +126,7 @@ const CampDetails = () => {
         healthcareProfessional: camp.healthcareProfessional,
         description: camp.description,
         participantCount: camp.participantCount,
+        addedBy: camp.addedBy
       };
 
       await axios.post(

@@ -22,6 +22,7 @@ import AddCamp from "../pages/Dashboard/AddCamp";
 import ManageCamps from "../pages/Dashboard/ManageCamps";
 import PrivateRoutes from "../routes/PrivateRoutes";
 import CampDetails from "../pages/AvailableCamps/CampDetails";
+import ManageRegisteredParticipants from "../pages/Dashboard/ManageRegisteredParticiapnts";
 
 const Router = createBrowserRouter([
   {
@@ -40,10 +41,12 @@ const Router = createBrowserRouter([
             Component: AvailableCamps,
           },
           {
-            path: "camps/:id", 
-            element: <PrivateRoutes>
-              <CampDetails></CampDetails>
-            </PrivateRoutes>
+            path: "camps/:id",
+            element: (
+              <PrivateRoutes>
+                <CampDetails></CampDetails>
+              </PrivateRoutes>
+            ),
           },
         ],
       },
@@ -145,6 +148,17 @@ const Router = createBrowserRouter([
           {
             path: "/dashboard/organizer/manage-camps",
             Component: ManageCamps,
+          },
+        ],
+      },
+
+      // manage registered participants for admin
+      {
+        element: <RoleBasedRoute allowedRoles={["admin"]} />,
+        children: [
+          {
+            path: "/dashboard/organizer/registered-camps",
+            Component: ManageRegisteredParticipants,
           },
         ],
       },
