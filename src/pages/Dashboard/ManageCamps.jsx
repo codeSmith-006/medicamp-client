@@ -25,7 +25,7 @@ const ManageCamps = () => {
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("enable: ", currentUser)
+  console.log("enable: ", currentUser);
 
   const {
     data: camps = [],
@@ -39,17 +39,19 @@ const ManageCamps = () => {
     },
     enabled: !!currentUser?.email,
   });
-  console.log("loading: ", isLoading)
-  console.log("camp data: ", camps);
+  console.log("loading: ", isLoading);
+  // console.log("camp data: ", camps);
   const filteredCamps = useMemo(() => {
-    return camps.filter(
-      (camp) =>
-        camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        camp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        camp.healthcareProfessional
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-    );
+    if (!camps?.result) return [];
+    const lowerSearch = (searchTerm || "").toLowerCase();
+
+    return camps.result.filter((camp) => {
+      return (
+        (camp.campName || "").toLowerCase().includes(lowerSearch) ||
+        (camp.location || "").toLowerCase().includes(lowerSearch) ||
+        (camp.healthcareProfessional || "").toLowerCase().includes(lowerSearch)
+      );
+    });
   }, [camps, searchTerm]);
 
   const itemsPerPage = 5;

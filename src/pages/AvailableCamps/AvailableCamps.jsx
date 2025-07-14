@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Input, Select, Spin, Button } from "antd";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-// import CampCard from "./CampCard"; // Assume this is prebuilt
-import { Grid, List } from "lucide-react";
-import CampCard from "./CampCard";
 import axiosSecure from "../../Hooks/AxiousSecure";
+import CampCard from "./CampCard";
+import { Grid, List } from "lucide-react";
 
 const { Option } = Select;
 
@@ -23,13 +21,12 @@ const AvailableCamps = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 9;
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["available-camps", search, sort, currentPage],
     queryFn: async () => {
       const res = await axiosSecure.get(
         `http://localhost:5000/camps?search=${search}&sort=${sort}&page=${currentPage}&limit=${limit}`
       );
-      console.log("response: ", res.data)
       return res.data;
     },
   });
@@ -103,17 +100,19 @@ const AvailableCamps = () => {
         <div className="flex justify-center py-20">
           <Spin size="large" />
         </div>
-      ) : data?.length === 0 ? (
+      ) : data?.result?.length === 0 ? (
         <p className="text-center text-gray-500 mt-10">
           No camps found matching your criteria.
         </p>
       ) : (
         <motion.div
           className={`grid gap-6 ${
-            viewMode === "grid3" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 md:grid-cols-2"
+            viewMode === "grid3"
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              : "grid-cols-1 md:grid-cols-2"
           }`}
         >
-          {data?.map((camp) => (
+          {data?.result?.map((camp) => (
             <CampCard key={camp._id} camp={camp} />
           ))}
         </motion.div>
@@ -132,7 +131,9 @@ const AvailableCamps = () => {
             Page {currentPage} of {totalPages}
           </span>
           <Button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             Next

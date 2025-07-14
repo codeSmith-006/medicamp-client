@@ -76,7 +76,7 @@ const Navbar = () => {
           Logout
         </span>
       ),
-      icon: <LogoutOutlined />,
+      icon: <LogoutOutlined onClick={onLogout} />,
       extra: "⌘L",
     },
   ];
