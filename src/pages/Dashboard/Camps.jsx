@@ -46,9 +46,14 @@ const RegisteredCamps = () => {
 
   console.log("Registered camps: ", registeredCamps);
 
-  const filteredData = registeredCamps.filter((item) =>
-    item.campName?.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredData = registeredCamps.filter((item) => {
+    const search = searchText.toLowerCase();
+
+    return (
+      item.campName?.toLowerCase().includes(search) ||
+      item.participantName?.toLowerCase().includes(search)
+    );
+  });
 
   const handleCancelRegistration = async (id) => {
     const result = await Swal.fire({
@@ -63,7 +68,9 @@ const RegisteredCamps = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/cancel-registration-user/${id}`);
+        await axios.delete(
+          `http://localhost:5000/cancel-registration-user/${id}`
+        );
         toast.success("✅ Registration cancelled");
         queryClient.invalidateQueries({ queryKey: ["registeredCamps"] });
 
