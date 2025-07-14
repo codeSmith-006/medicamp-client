@@ -65,6 +65,15 @@ const FAQSection = () => {
     AOS.init({ duration: 800 });
   }, []);
 
+  const headerVariants = {
+    rest: { opacity: 0.6, y: 10 },
+    hover: (custom) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: custom * 0.1, duration: 0.3 },
+    }),
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -85,12 +94,6 @@ const FAQSection = () => {
         >
           {faqs.map((faq, index) => (
             <Panel
-              header={
-                <span className="text-base md:text-lg font-semibold text-gray-800">
-                  <QuestionCircleOutlined className="mr-2 text-blue-500" />
-                  {faq.question}
-                </span>
-              }
               key={index}
               style={{
                 background: "#f9f9f9",
@@ -98,6 +101,21 @@ const FAQSection = () => {
                 marginBottom: 12,
               }}
               showArrow
+              header={
+                <motion.div
+                  variants={headerVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  animate="rest"
+                  custom={index}
+                  className="flex items-center"
+                >
+                  <QuestionCircleOutlined className="mr-2 text-blue-500" />
+                  <span className="text-base md:text-lg font-semibold text-gray-800">
+                    {faq.question}
+                  </span>
+                </motion.div>
+              }
             >
               <p className="text-gray-700 text-sm md:text-base leading-relaxed">
                 {faq.answer}
@@ -109,5 +127,6 @@ const FAQSection = () => {
     </motion.div>
   );
 };
+
 
 export default FAQSection;
