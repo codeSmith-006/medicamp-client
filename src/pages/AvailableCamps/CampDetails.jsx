@@ -14,7 +14,7 @@ import {
 } from "antd";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
-import { ArrowLeftOutlined, UserAddOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, ConsoleSqlOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useForm, Controller } from "react-hook-form";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import useCurrentUser from "../../Hooks/useController";
@@ -46,6 +46,7 @@ const CampDetails = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [registeredParticipants, setRegisteredParticipants] = useState(null);
 
   // react-hook-form setup
   const {
@@ -55,6 +56,7 @@ const CampDetails = () => {
     formState: { errors },
   } = useForm();
 
+  // fetching camps data by id
   useEffect(() => {
     const fetchCamp = async () => {
       try {
@@ -80,6 +82,18 @@ const CampDetails = () => {
     }
   }, [isLoading, currentUser, id]);
 
+  // fetching registered participants by id
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      const response = await axiosSecure.get(
+        "http://localhost:5000/registered-participant"
+      );
+      setRegisteredParticipants(response.data);
+    };
+
+    fetchParticipants();
+  }, []);
+
   const openModal = () => {
     setModalVisible(true);
     // Prefill form with user data + camp details
@@ -99,10 +113,29 @@ const CampDetails = () => {
 
   const onRegisterSubmit = async (data) => {
     setRegistering(true);
+
+    // 🔍 Check if already registered
+    const isAlreadyRegistered = registeredParticipants.some(
+      (participant) =>
+        participant.participantEmail === data.participantEmail &&
+        participant.participantName.trim().toLowerCase() ===
+          data.participantName.trim().toLowerCase() &&
+        participant.phone === data.phone
+    );
+
+    console.log("already registered?: ", isAlreadyRegistered)
+
+    if (isAlreadyRegistered) {
+      toast.error("❌ You are already registered for this camp!");
+      // setAlreadyRegistered(true)
+      setRegistering(false);
+      return;
+    }
+
     try {
-      // Save registration (simulate endpoint)
+      // ✅ Continue with registration
       const registrationData = {
-        campId: id, // Assuming 'id' is the camp ID
+        campId: id,
         participantName: data.participantName,
         participantEmail: data.participantEmail,
         loggedUserEmail: currentUser.email,
@@ -110,14 +143,12 @@ const CampDetails = () => {
         phone: data.phone,
         gender: data.gender,
         emergencyContact: data.emergencyContact,
+        paymentStatus: "unpaid",
+        confirmationStatus: "pending",
+        transactionId: null,
+        registeredAt: new Date().toISOString(),
 
-        // ✅ New required fields
-        paymentStatus: "unpaid", // Default status
-        confirmationStatus: "pending", // Will be confirmed after payment
-        transactionId: null, // Will be filled after Stripe payment
-        registeredAt: new Date().toISOString(), // Registration timestamp
-
-        // ✅ Camp Info Snapshot
+        // Camp snapshot
         campName: camp.campName,
         image: camp.image,
         campFees: camp.campFees,
@@ -126,7 +157,7 @@ const CampDetails = () => {
         healthcareProfessional: camp.healthcareProfessional,
         description: camp.description,
         participantCount: camp.participantCount,
-        addedBy: camp.addedBy
+        addedBy: camp.addedBy,
       };
 
       await axios.post(
@@ -134,14 +165,14 @@ const CampDetails = () => {
         registrationData
       );
 
-      // Increment participant count
       await axios.patch(
         `http://localhost:5000/camps/${id}/increment-participants`
       );
 
-      toast.success("Successfully joined the camp!");
+      toast.success("🎉 Successfully joined the camp!");
       setModalVisible(false);
-      // Optionally refetch camp data to update participant count
+
+      // Optional UI update
       setCamp((prev) => ({
         ...prev,
         participantCount: (prev?.participantCount || 0) + 1,

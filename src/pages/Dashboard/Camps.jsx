@@ -134,6 +134,7 @@ const RegisteredCamps = () => {
                     campId: record.campId,
                     amount: record.campFees,
                     userEmail: record.participantEmail,
+                    userName: record.participantName,
                   })
                 }
               >

@@ -11,32 +11,46 @@ const PaymentSuccess = () => {
   const [loading, setLoading] = useState(true);
   const [transactionId, setTransactionId] = useState("");
   const navigate = useNavigate();
+  const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
-    const confirmPayment = async () => {
+    const fetchSession = async () => {
       try {
-        const res = await axios.patch(
+        const { data } = await axios.get(
+          `http://localhost:5000/session-details/${sessionId}`
+        );
+        console.log("payment data: ", data)
+        const transactionId = data.payment_intent;
+        const campId = data.metadata?.campId;
+
+        // Send patch request to update status + transactionId
+        const result = await axios.patch(
           `http://localhost:5000/update-payment-status/${campId}`,
-          { paymentStatus: "paid" }
+          {
+            participantEmail: data.customer_email,
+            paymentStatus: "paid",
+            transactionId,
+          }
         );
 
-        if (res.data.modifiedCount > 0 || res.data.acknowledged) {
-          toast.success("✅ Payment confirmed and camp registered!");
-          setTransactionId(res.data.transactionId);
-        } else {
-          toast("Already updated or not found.");
-        }
+        console.log("Payment status: ", result.data)
+
+        toast.success("✅ Payment confirmed!");
+        setTransactionId(transactionId);
       } catch (err) {
-        console.error("Payment update error:", err);
+        console.error("Payment success error:", err);
         toast.error("Something went wrong while confirming payment.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (campId) confirmPayment();
-    else setLoading(false);
-  }, [campId]);
+    if (sessionId) {
+      fetchSession();
+    } else {
+      setLoading(false);
+    }
+  }, [sessionId]);
 
   return (
     <motion.div
@@ -58,7 +72,8 @@ const PaymentSuccess = () => {
               <div className="space-y-2">
                 <p>Your camp registration has been confirmed.</p>
                 <p className="font-semibold text-gray-700">
-                  Transaction ID: <span className="text-green-600">{transactionId}</span>
+                  Transaction ID:{" "}
+                  <span className="text-green-600">{transactionId}</span>
                 </p>
               </div>
             }
