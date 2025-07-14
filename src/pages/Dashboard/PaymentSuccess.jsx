@@ -81,7 +81,7 @@ const PaymentSuccess = () => {
               <Button
                 type="primary"
                 key="dashboard"
-                onClick={() => navigate("/dashboard/participant/camps")}
+                onClick={() => navigate("/dashboard/participants/camps")}
               >
                 🔙 Back to Camps
               </Button>,

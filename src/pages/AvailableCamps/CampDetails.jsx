@@ -48,6 +48,7 @@ const CampDetails = () => {
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [registeredParticipants, setRegisteredParticipants] = useState(null);
 
+
   // react-hook-form setup
   const {
     control,
@@ -170,6 +171,7 @@ const CampDetails = () => {
       );
 
       toast.success("🎉 Successfully joined the camp!");
+      navigate("/dashboard/participants/camps")
       setModalVisible(false);
 
       // Optional UI update
