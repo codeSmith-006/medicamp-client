@@ -15,6 +15,9 @@ import { SearchOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import axiosSecure from "../../Hooks/AxiousSecure"; // your secure axios instance
 import useStripePayment from "../../Hooks/useSriptePayment";
+import toast from "react-hot-toast";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const { confirm } = Modal;
 
@@ -24,7 +27,7 @@ const RegisteredCamps = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [form] = Form.useForm();
-  const {mutate: handlePayment} = useStripePayment();
+  const { mutate: handlePayment } = useStripePayment();
 
   const queryClient = useQueryClient();
 
@@ -47,20 +50,34 @@ const RegisteredCamps = () => {
     item.campName?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const handleCancelRegistration = (id) => {
-    confirm({
-      title: "Are you sure you want to cancel this registration?",
-      icon: <ExclamationCircleOutlined />,
-      onOk: async () => {
-        try {
-          await axiosSecure.delete(`/registrations/${id}`);
-          message.success("Registration cancelled");
-          queryClient.invalidateQueries({ queryKey: ["registeredCamps"] });
-        } catch (err) {
-          message.error("Failed to cancel registration");
-        }
-      },
+  const handleCancelRegistration = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will cancel your registration permanently!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, cancel it!",
     });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:5000/cancel-registration-user/${id}`);
+        toast.success("✅ Registration cancelled");
+        queryClient.invalidateQueries({ queryKey: ["registeredCamps"] });
+
+        // Optional SweetAlert success
+        Swal.fire(
+          "Cancelled!",
+          "Your registration has been removed.",
+          "success"
+        );
+      } catch (err) {
+        console.error(err);
+        toast.error("❌ Failed to cancel registration");
+      }
+    }
   };
 
   const handleOpenFeedback = (record) => {
@@ -76,11 +93,11 @@ const RegisteredCamps = () => {
         feedback: values.feedback,
         rating: values.rating,
       };
-      await axiosSecure.post("/feedback", payload);
-      message.success("Thank you for your feedback!");
+      await axios.post("http://localhost:5000/feedback", payload);
+      toast.success("Thank you for your feedback!");
       setFeedbackModalVisible(false);
     } catch (error) {
-      message.error("Failed to submit feedback");
+      toast.error("Failed to submit feedback");
     }
   };
 

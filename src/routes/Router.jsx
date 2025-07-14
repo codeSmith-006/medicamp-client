@@ -24,6 +24,7 @@ import PrivateRoutes from "../routes/PrivateRoutes";
 import CampDetails from "../pages/AvailableCamps/CampDetails";
 import ManageRegisteredParticipants from "../pages/Dashboard/ManageRegisteredParticiapnts";
 import PaymentSuccess from "../pages/Dashboard/PaymentSuccess";
+import PaymentCancelled from "../pages/Dashboard/paymentCancelled";
 
 const Router = createBrowserRouter([
   {
@@ -58,7 +59,13 @@ const Router = createBrowserRouter([
             <PaymentSuccess></PaymentSuccess>
           </PrivateRoutes>
         ),
-      },
+      }, 
+      {
+        path: "payment-cancelled",
+        element: <PrivateRoutes>
+          <PaymentCancelled></PaymentCancelled>
+        </PrivateRoutes>
+      }
     ],
   },
 
