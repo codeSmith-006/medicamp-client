@@ -50,9 +50,7 @@ const Router = createBrowserRouter([
           {
             path: "camps/:id",
             element: (
-              <PrivateRoutes>
                 <CampDetails></CampDetails>
-              </PrivateRoutes>
             ),
           },
         ],

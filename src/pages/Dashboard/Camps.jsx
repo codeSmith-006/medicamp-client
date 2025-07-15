@@ -44,7 +44,7 @@ const RegisteredCamps = () => {
     },
   });
 
-  console.log("Registered camps: ", registeredCamps);
+  // console.log("Registered camps: ", registeredCamps);
 
   const filteredData = registeredCamps.filter((item) => {
     const search = searchText.toLowerCase();
@@ -93,18 +93,27 @@ const RegisteredCamps = () => {
     setFeedbackModalVisible(true);
   };
 
+  // consoling selected camp for feedback
+  // console.log("selected form for feedback: ", selectedCamp)
+
   const handleSubmitFeedback = async (values) => {
+    console.log("Values: ", values)
     try {
       const payload = {
+        participantName: selectedCamp?.participantName,
+        participantEmail: selectedCamp?.participantEmail,
+        campName: selectedCamp?.campName,
         campId: selectedCamp.campId,
         feedback: values.feedback,
         rating: values.rating,
       };
-      await axios.post("http://localhost:5000/feedback", payload);
+      const response = await axios.post("http://localhost:5000/feedback", payload);
+      console.log("Submit form response: ", response.data)
       toast.success("Thank you for your feedback!");
       setFeedbackModalVisible(false);
     } catch (error) {
-      toast.error("Failed to submit feedback");
+      console.log(error)
+      toast.error("Failed to submit feedback", error);
     }
   };
 

@@ -80,7 +80,7 @@ const CampCard = ({ camp }) => {
               {campFees > 0 ? `৳${campFees}` : "Free"}
             </p>
             <NavLink
-              to={`camps/${_id}`}
+              to={`/available-camps/camps/${_id}`}
               className="bg-blue-400 text-white px-4 py-2 text-sm rounded-full font-semibold hover:bg-blue-500 transition-all"
             >
               View Details
