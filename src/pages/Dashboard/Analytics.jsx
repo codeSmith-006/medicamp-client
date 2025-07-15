@@ -1,165 +1,167 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
-  AreaChart,
-  Area,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  AreaChart,
+  Area,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
-import { Users, Calendar, DollarSign, Star } from "lucide-react";
-import StatCard from "./StatCard";
-// import StatCard from '../components/StatCard';
+import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import axiosSecure from "../../Hooks/AxiousSecure";
+import { motion } from "framer-motion";
+import AOS from "aos";
+import { Calendar, DollarSign, Users } from "lucide-react";
 
-const Analytics = () => {
-  const analyticsData = [
-    { month: "Jan", participants: 45, revenue: 15000 },
-    { month: "Feb", participants: 52, revenue: 18000 },
-    { month: "Mar", participants: 48, revenue: 16500 },
-    { month: "Apr", participants: 61, revenue: 22000 },
-    { month: "May", participants: 55, revenue: 19500 },
-    { month: "Jun", participants: 67, revenue: 24000 },
-  ];
+const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#6366f1", "#ec4899"];
 
-  const campData = [
-    { name: "Summer Adventure", value: 35, color: "#3b82f6" },
-    { name: "Sports Camp", value: 28, color: "#10b981" },
-    { name: "Arts & Crafts", value: 22, color: "#f59e0b" },
-    { name: "STEM Camp", value: 15, color: "#ef4444" },
-  ];
+const StatCard = ({ icon: Icon, title, value, color }) => (
+  <div className="bg-white p-4 rounded-xl shadow-lg flex items-center space-x-4">
+    <Icon className={`w-8 h-8 ${color}`} />
+    <div>
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className="text-xl font-bold text-gray-800">{value}</p>
+    </div>
+  </div>
+);
+
+const ParticipantAnalytics = ({ userEmail }) => {
+  useEffect(() => {
+    AOS.init({ duration: 800 });
+  }, []);
+
+  const { register, watch } = useForm();
+  const filterDate = watch("filterDate");
+
+  const { data: registrations = [], isLoading } = useQuery({
+    queryKey: ["participant-analytics", userEmail],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/registered-participant?email=${userEmail}`);
+      return res.data;
+    },
+  });
+
+  // Only count paid registrations
+  const paidRegistrations = useMemo(
+    () => registrations.filter((r) => r.paymentStatus === "paid"),
+    [registrations]
+  );
+
+  // Optional: filter by date
+  const filteredData = useMemo(() => {
+    if (!filterDate) return paidRegistrations;
+    return paidRegistrations.filter((r) =>
+      new Date(r.registeredAt).toISOString().startsWith(filterDate)
+    );
+  }, [paidRegistrations, filterDate]);
+
+  const totalCamps = filteredData.length;
+  const totalFees = filteredData.reduce((sum, r) => sum + (r.campFees || 0), 0);
+
+  const campStats = useMemo(() => {
+    const map = {};
+    filteredData.forEach((r) => {
+      const name = r.campName;
+      if (!map[name]) {
+        map[name] = { name, count: 0, fee: 0 };
+      }
+      map[name].count += 1;
+      map[name].fee += r.campFees || 0;
+    });
+    return Object.values(map);
+  }, [filteredData]);
+
+  const activityTimeline = useMemo(() => {
+    const map = {};
+    filteredData.forEach((r) => {
+      const date = new Date(r.registeredAt).toISOString().split("T")[0];
+      if (!map[date]) map[date] = 0;
+      map[date] += 1;
+    });
+    return Object.entries(map).map(([date, count]) => ({ date, count }));
+  }, [filteredData]);
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6 px-4 md:px-8 py-8"
+    >
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Analytics Dashboard
-        </h2>
-        <div className="flex space-x-4">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-            Export Report
-          </button>
-        </div>
+        <h2 className="text-3xl font-bold text-gray-800">📊 Your Camp Analytics</h2>
+        <input
+          type="date"
+          {...register("filterDate")}
+          className="border rounded-md px-3 py-2 text-sm"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Participants"
-          value="142"
-          icon={Users}
-          color="text-blue-500"
-          trend="+12% from last month"
-        />
-        <StatCard
-          title="Active Camps"
-          value="8"
-          icon={Calendar}
-          color="text-green-500"
-          trend="+2 new camps"
-        />
-        <StatCard
-          title="Revenue"
-          value="$24,500"
-          icon={DollarSign}
-          color="text-purple-500"
-          trend="+18% increase"
-        />
-        <StatCard
-          title="Satisfaction"
-          value="4.8/5"
-          icon={Star}
-          color="text-orange-500"
-          trend="Excellent rating"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard title="Total Camps Joined" value={totalCamps} icon={Users} color="text-blue-500" />
+        <StatCard title="Total Fees Paid" value={`৳${totalFees}`} icon={DollarSign} color="text-green-500" />
+        <StatCard title="Active Days" value={activityTimeline.length} icon={Calendar} color="text-purple-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Monthly Participation
-          </h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-lg font-semibold mb-4">Camp-wise Registrations</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={analyticsData}>
+            <BarChart data={campStats}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
               <Tooltip />
-              <Area
-                type="monotone"
-                dataKey="participants"
-                stroke="#3b82f6"
-                fill="#3b82f6"
-                fillOpacity={0.6}
-              />
-            </AreaChart>
+              <Bar dataKey="count" fill="#3b82f6" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Camp Distribution
-          </h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h3 className="text-lg font-semibold mb-4">Fees per Camp</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={campData}
+                data={campStats}
+                dataKey="fee"
+                nameKey="name"
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
-                outerRadius={120}
-                paddingAngle={5}
-                dataKey="value"
+                outerRadius={100}
+                label
               >
-                {campData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                {campStats.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-          <div className="mt-4 space-y-2">
-            {campData.map((camp, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div
-                    className={`w-3 h-3 rounded-full mr-2`}
-                    style={{ backgroundColor: camp.color }}
-                  ></div>
-                  <span className="text-sm text-gray-600">{camp.name}</span>
-                </div>
-                <span className="text-sm font-medium text-gray-800">
-                  {camp.value}%
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Revenue Trend</h3>
+      <div className="bg-white p-6 rounded-xl shadow-lg">
+        <h3 className="text-lg font-semibold mb-4">Registration Activity Over Time</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={analyticsData}>
+          <AreaChart data={activityTimeline}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
+            <XAxis dataKey="date" />
+            <YAxis allowDecimals={false} />
             <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="revenue"
-              stroke="#10b981"
-              strokeWidth={3}
-            />
-          </LineChart>
+            <Area type="monotone" dataKey="count" stroke="#10b981" fill="#bbf7d0" />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-export default Analytics;
+export default ParticipantAnalytics;

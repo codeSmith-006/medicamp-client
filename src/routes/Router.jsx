@@ -25,8 +25,13 @@ import CampDetails from "../pages/AvailableCamps/CampDetails";
 import ManageRegisteredParticipants from "../pages/Dashboard/ManageRegisteredParticiapnts";
 import PaymentSuccess from "../pages/Dashboard/PaymentSuccess";
 import PaymentCancelled from "../pages/Dashboard/paymentCancelled";
+import ErrorPage from "../pages/ErrorPage/ErrorPage";
 
 const Router = createBrowserRouter([
+  {
+    path: "*",
+    Component: ErrorPage
+  }, 
   {
     path: "/",
     Component: MainLayout,
