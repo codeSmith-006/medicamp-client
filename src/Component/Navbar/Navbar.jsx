@@ -98,7 +98,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden text-white lg:flex items-center gap-6">
+        <div className="hidden text-black md:text-white lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
           <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
 

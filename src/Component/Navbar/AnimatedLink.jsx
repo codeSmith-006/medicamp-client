@@ -17,7 +17,7 @@ const AnimatedLink = ({ to, children }) => {
         to={to}
         className={({ isActive }) =>
           `relative px-2 py-1 text-base font-medium ${
-            isActive ? "nav-active" : "text-white"
+            isActive ? "nav-active" : "text-black md:text-white"
           }`
         }
         style={({ isActive }) => ({
