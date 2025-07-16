@@ -46,6 +46,8 @@ const Navbar = () => {
     },
   });
 
+  console.log("current user: ", dbUser)
+
   const dropdownItems = [
     {
       key: "1",
@@ -136,7 +138,7 @@ const Navbar = () => {
         <div className="lg:hidden">
           <button
             onClick={toggleMenu}
-            className="btn btn-ghost btn-circle text-2xl"
+            className="btn btn-circle bg-none text-2xl"
           >
             {menuOpen ? <HiX /> : <HiMenuAlt3 />}
           </button>

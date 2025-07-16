@@ -18,6 +18,7 @@ import useStripePayment from "../../Hooks/useSriptePayment";
 import toast from "react-hot-toast";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 const { confirm } = Modal;
 
@@ -69,7 +70,7 @@ const RegisteredCamps = () => {
     if (result.isConfirmed) {
       try {
         await axios.delete(
-          `http://localhost:5000/cancel-registration-user/${id}`
+          `https://medicamp-server-jade.vercel.app/cancel-registration-user/${id}`
         );
         toast.success("✅ Registration cancelled");
         queryClient.invalidateQueries({ queryKey: ["registeredCamps"] });
@@ -97,7 +98,7 @@ const RegisteredCamps = () => {
   // console.log("selected form for feedback: ", selectedCamp)
 
   const handleSubmitFeedback = async (values) => {
-    console.log("Values: ", values)
+    console.log("Values: ", values);
     try {
       const payload = {
         participantName: selectedCamp?.participantName,
@@ -107,12 +108,15 @@ const RegisteredCamps = () => {
         feedback: values.feedback,
         rating: values.rating,
       };
-      const response = await axios.post("http://localhost:5000/feedback", payload);
-      console.log("Submit form response: ", response.data)
+      const response = await axios.post(
+        "https://medicamp-server-jade.vercel.app/feedback",
+        payload
+      );
+      console.log("Submit form response: ", response.data);
       toast.success("Thank you for your feedback!");
       setFeedbackModalVisible(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error("Failed to submit feedback", error);
     }
   };
@@ -203,6 +207,9 @@ const RegisteredCamps = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      <Helmet>
+        <title>Registered Camps | Dashboard | MCMS</title>
+      </Helmet>
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-gray-800">
           📋 Registered Camps

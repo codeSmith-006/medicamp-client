@@ -6,11 +6,10 @@ import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Input, Table, Spin, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-// import UpdateCampModal from "./UpdateCampModal"; // Create separately
-// import useAuth from "../../Hooks/useAuth";
 import UpdateCampModal from "./UpdateCampModal";
 import useCurrentUser from "../../Hooks/useController";
 import axiosSecure from "../../Hooks/AxiousSecure";
+import { Helmet } from "react-helmet-async";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -24,42 +23,23 @@ const ManageCamps = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  console.log("enable: ", currentUser);
+  const itemsPerPage = 5;
 
   const {
-    data: camps = [],
+    data = { result: [], total: 0 },
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["organizer-camps", currentUser?.email],
+    queryKey: ["organizer-camps", currentUser?.email, searchTerm, currentPage],
     queryFn: async () => {
-      const res = await axiosSecure.get(`camps`);
+      const url = `https://medicamp-server-jade.vercel.app/camps?search=${encodeURIComponent(
+        searchTerm
+      )}&page=${currentPage}&limit=${itemsPerPage}`;
+      const res = await axios.get(url);
       return res.data;
     },
     enabled: !!currentUser?.email,
   });
-  console.log("loading: ", isLoading);
-  // console.log("camp data: ", camps);
-  const filteredCamps = useMemo(() => {
-    if (!camps?.result) return [];
-    const lowerSearch = (searchTerm || "").toLowerCase();
-
-    return camps.result.filter((camp) => {
-      return (
-        (camp.campName || "").toLowerCase().includes(lowerSearch) ||
-        (camp.location || "").toLowerCase().includes(lowerSearch) ||
-        (camp.healthcareProfessional || "").toLowerCase().includes(lowerSearch)
-      );
-    });
-  }, [camps, searchTerm]);
-
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(filteredCamps.length / itemsPerPage);
-  const paginatedCamps = filteredCamps.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -72,7 +52,7 @@ const ManageCamps = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/camps/${id}`);
+        await axios.delete(`https://medicamp-server-jade.vercel.app/camps/${id}`);
         toast.success("Camp deleted successfully");
         refetch();
       } catch (err) {
@@ -139,6 +119,9 @@ const ManageCamps = () => {
       variants={fadeInUp}
       className="max-w-6xl mx-auto p-4 mt-10"
     >
+      <Helmet>
+        <title>Manage Camp | Dashboard | MCMS</title>
+      </Helmet>
       <h2 className="text-3xl font-semibold text-indigo-700 mb-6">
         📋 Manage Your Camps
       </h2>
@@ -158,11 +141,11 @@ const ManageCamps = () => {
         <div className="flex justify-center py-10">
           <Spin size="large" />
         </div>
-      ) : filteredCamps.length === 0 ? (
+      ) : data.result.length === 0 ? (
         <p className="text-center text-gray-500">No camps found.</p>
       ) : (
         <Table
-          dataSource={paginatedCamps}
+          dataSource={data.result}
           columns={columns}
           rowKey="_id"
           pagination={false}
@@ -172,7 +155,7 @@ const ManageCamps = () => {
       )}
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {data.total > itemsPerPage && (
         <div className="flex justify-center mt-6 gap-2">
           <Button
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
@@ -181,11 +164,15 @@ const ManageCamps = () => {
             Previous
           </Button>
           <span className="px-4 py-2 text-lg">
-            Page {currentPage} of {totalPages}
+            Page {currentPage} of {Math.ceil(data.total / itemsPerPage)}
           </span>
           <Button
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((p) =>
+                Math.min(p + 1, Math.ceil(data.total / itemsPerPage))
+              )
+            }
+            disabled={currentPage === Math.ceil(data.total / itemsPerPage)}
           >
             Next
           </Button>

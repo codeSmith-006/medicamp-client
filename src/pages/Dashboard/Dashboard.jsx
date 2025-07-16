@@ -6,6 +6,7 @@ import Navbar from "../../Component/Navbar/Navbar";
 import LoadingSpinner from "../../Component/LoadingSpinner/LoadingSpinner";
 import useCurrentUser from "../../Hooks/useController";
 import AuthContext from "../../Context/AuthContext";
+import { Helmet } from "react-helmet-async";
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -31,6 +32,9 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
+      <Helmet>
+        <title>Dashboard | MCMS</title>
+      </Helmet>
       <Navbar />
 
       {/* Backdrop first */}

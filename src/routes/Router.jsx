@@ -30,8 +30,8 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 const Router = createBrowserRouter([
   {
     path: "*",
-    Component: ErrorPage
-  }, 
+    Component: ErrorPage,
+  },
   {
     path: "/",
     Component: MainLayout,
@@ -50,7 +50,9 @@ const Router = createBrowserRouter([
           {
             path: "camps/:id",
             element: (
+              <PrivateRoutes>
                 <CampDetails></CampDetails>
+              </PrivateRoutes>
             ),
           },
         ],
@@ -62,13 +64,15 @@ const Router = createBrowserRouter([
             <PaymentSuccess></PaymentSuccess>
           </PrivateRoutes>
         ),
-      }, 
+      },
       {
         path: "payment-cancelled",
-        element: <PrivateRoutes>
-          <PaymentCancelled></PaymentCancelled>
-        </PrivateRoutes>
-      }
+        element: (
+          <PrivateRoutes>
+            <PaymentCancelled></PaymentCancelled>
+          </PrivateRoutes>
+        ),
+      },
     ],
   },
 

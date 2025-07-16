@@ -17,6 +17,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import axiosSecure from "../../Hooks/AxiousSecure";
+import { Helmet } from "react-helmet-async";
 
 // Simulated current organizer's email
 const currentOrganizerEmail = "organizer@example.com"; // Replace with real user logic
@@ -37,7 +38,7 @@ const ManageRegisteredParticipants = () => {
     queryKey: ["registered-participants", currentOrganizerEmail],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `http://localhost:5000/all-registered-participant?email=${currentOrganizerEmail}`
+        `https://medicamp-server-jade.vercel.app/all-registered-participant?email=${currentOrganizerEmail}`
       );
       return res.data;
     },
@@ -55,7 +56,7 @@ const ManageRegisteredParticipants = () => {
 
     try {
       await axios.patch(
-        `http://localhost:5000/confirm-participant/${record._id}`
+        `https://medicamp-server-jade.vercel.app/confirm-participant/${record._id}`
       );
       toast.success("Participant confirmed");
       refetch();
@@ -77,7 +78,9 @@ const ManageRegisteredParticipants = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axiosSecure.delete(`http://localhost:5000/delete-registration/${id}`);
+        await axiosSecure.delete(
+          `https://medicamp-server-jade.vercel.app/delete-registration/${id}`
+        );
         toast.success("Registration cancelled");
         refetch();
       } catch {
@@ -177,7 +180,9 @@ const ManageRegisteredParticipants = () => {
   }
 
   if (isError) {
-    return <p className="text-red-600 text-center mt-20">Failed to load data.</p>;
+    return (
+      <p className="text-red-600 text-center mt-20">Failed to load data.</p>
+    );
   }
 
   return (
@@ -187,6 +192,9 @@ const ManageRegisteredParticipants = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      <Helmet>
+        <title>Manage Participants | Dashboard | MCMS</title>
+      </Helmet>
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">
           📋 Registered Participants

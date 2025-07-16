@@ -3,6 +3,7 @@ import { Table, Tag, Spin, Empty } from "antd";
 import { motion } from "framer-motion";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import useCurrentUser from "../../Hooks/useController";
+import { Helmet } from "react-helmet-async";
 
 const Payments = () => {
   const { currentUser } = useCurrentUser();
@@ -12,11 +13,15 @@ const Payments = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const { data } = await axiosSecure.get("http://localhost:5000/registered-participant");
+        const { data } = await axiosSecure.get(
+          "https://medicamp-server-jade.vercel.app/registered-participant"
+        );
 
         const filtered = data
-          .filter((item) =>
-            item.loggedUserEmail === currentUser?.email && item.paymentStatus === "paid"
+          .filter(
+            (item) =>
+              item.loggedUserEmail === currentUser?.email &&
+              item.paymentStatus === "paid"
           )
           .map((item, index) => ({
             key: index,
@@ -82,7 +87,9 @@ const Payments = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color="green" className="font-semibold">{status}</Tag>
+        <Tag color="green" className="font-semibold">
+          {status}
+        </Tag>
       ),
     },
   ];
@@ -94,7 +101,12 @@ const Payments = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Stripe Transactions</h2>
+      <Helmet>
+        <title>Payment  History | Dashboard | MCMS</title>
+      </Helmet>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+        Stripe Transactions
+      </h2>
 
       {loading ? (
         <div className="flex justify-center items-center py-10">

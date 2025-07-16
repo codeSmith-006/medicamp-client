@@ -43,7 +43,7 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
       console.log("updated data: ", updateData)
 
       // patch request to update camp
-      await axios.patch(`http://localhost:5000/camps/${camp._id}`, updateData);
+      await axios.patch(`https://medicamp-server-jade.vercel.app/camps/${camp._id}`, updateData);
 
       toast.success("Camp updated successfully");
       onUpdated();

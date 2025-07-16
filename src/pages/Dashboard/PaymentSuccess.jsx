@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
     const fetchSession = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:5000/session-details/${sessionId}`
+          `https://medicamp-server-jade.vercel.app/session-details/${sessionId}`
         );
         console.log("payment data: ", data)
         const transactionId = data.payment_intent;
@@ -25,7 +25,7 @@ const PaymentSuccess = () => {
 
         // Send patch request to update status + transactionId
         const result = await axios.patch(
-          `http://localhost:5000/update-payment-status/${campId}`,
+          `https://medicamp-server-jade.vercel.app/update-payment-status/${campId}`,
           {
             participantEmail: data.customer_email,
             paymentStatus: "paid",

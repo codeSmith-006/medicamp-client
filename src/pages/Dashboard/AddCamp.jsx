@@ -7,12 +7,13 @@ import TextArea from "antd/es/input/TextArea";
 import { motion } from "framer-motion";
 import axios from "axios";
 import AuthContext from "../../Context/AuthContext";
+import { Helmet } from "react-helmet-async";
 
 const AddCamp = () => {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const imageInputRef = useRef(null);
-  const {user} = use(AuthContext);
+  const { user } = use(AuthContext);
 
   // fade up animation
   const fadeInUp = {
@@ -79,10 +80,13 @@ const AddCamp = () => {
 
     // Commented out server request, just logging for now
     console.log("Camp data: ", campData);
-    
+
     // post camps data to the database
     try {
-      const response = await axios.post('http://localhost:5000/camps', campData);
+      const response = await axios.post(
+        "https://medicamp-server-jade.vercel.app/camps",
+        campData
+      );
 
       if (response.data?.insertedId) {
         toast.success("Camp added successfully");
@@ -92,9 +96,8 @@ const AddCamp = () => {
         }
         reset();
       }
-
     } catch (error) {
-      console.log("Error while posting data to db: ", error)
+      console.log("Error while posting data to db: ", error);
     }
   };
 
@@ -105,6 +108,9 @@ const AddCamp = () => {
       transition={{ duration: 0.5 }}
       className="max-w-3xl mx-auto mt-14 px-4 sm:px-0"
     >
+      <Helmet>
+        <title>Add Camp | Dashboard | MCMS</title>
+      </Helmet>
       <Card
         title={
           <h2 className="text-3xl font-semibold text-indigo-700 flex items-center gap-2">

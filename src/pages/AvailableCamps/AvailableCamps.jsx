@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import CampCard from "./CampCard";
 import { Grid, List } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const { Option } = Select;
 
@@ -25,7 +26,7 @@ const AvailableCamps = () => {
     queryKey: ["available-camps", search, sort, currentPage],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `http://localhost:5000/camps?search=${search}&sort=${sort}&page=${currentPage}&limit=${limit}`
+        `https://medicamp-server-jade.vercel.app/camps?search=${search}&sort=${sort}&page=${currentPage}&limit=${limit}`
       );
       return res.data;
     },
@@ -54,6 +55,9 @@ const AvailableCamps = () => {
       animate="animate"
       variants={fadeInUp}
     >
+      <Helmet>
+        <title>Available Camps | MCMS</title>
+      </Helmet>
       {/* Header */}
       <div className="mb-10 text-center">
         <h2 className="text-4xl font-bold text-indigo-700">
@@ -89,7 +93,9 @@ const AvailableCamps = () => {
           </Select>
 
           <Button
-            icon={viewMode === "grid3" ? <Grid size={18} /> : <List size={18} />}
+            icon={
+              viewMode === "grid3" ? <Grid size={18} /> : <List size={18} />
+            }
             onClick={handleViewToggle}
           />
         </div>

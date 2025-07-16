@@ -6,6 +6,7 @@ import axios from "axios";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 const fetchLoggedInUser = async () => {
   const res = await axiosSecure.get("/users");
@@ -51,28 +52,30 @@ const Participant = () => {
     }
   }, [user, reset]);
 
-  console.log("User: ", user)
+  console.log("User: ", user);
 
-const onSubmit = async (data) => {
-  const finalProfile = { ...data, photoUrl };
+  const onSubmit = async (data) => {
+    const finalProfile = { ...data, photoUrl };
 
-  try {
-    const res = await axiosSecure.patch("/users/participants-profile", finalProfile);
+    try {
+      const res = await axiosSecure.patch(
+        "/users/participants-profile",
+        finalProfile
+      );
 
-    if (res.data.modifiedCount > 0) {
-      toast.success("Profile updated successfully!");
+      if (res.data.modifiedCount > 0) {
+        toast.success("Profile updated successfully!");
 
-      // ✅ Invalidate React Query cache to refetch updated data in Navbar
-      queryClient.invalidateQueries({ queryKey: ["user", user?.email] });
-    } else {
-      toast.info("No changes made.");
+        // ✅ Invalidate React Query cache to refetch updated data in Navbar
+        queryClient.invalidateQueries({ queryKey: ["user", user?.email] });
+      } else {
+        toast.info("No changes made.");
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast.error("Failed to update profile.");
     }
-  } catch (error) {
-    console.error("Profile update error:", error);
-    toast.error("Failed to update profile.");
-  }
-};
-
+  };
 
   const handleImageSubmit = async (event) => {
     const file = event.target.files?.[0];
@@ -130,6 +133,9 @@ const onSubmit = async (data) => {
       transition={{ duration: 0.5 }}
       className="max-w-3xl mx-auto mt-10"
     >
+      <Helmet>
+        <title>Profile | Dashboard | MCMS</title>
+      </Helmet>
       <Card bordered={false} className="shadow-xl rounded-xl">
         <div className="flex flex-col items-center text-center space-y-4">
           {uploading ? (

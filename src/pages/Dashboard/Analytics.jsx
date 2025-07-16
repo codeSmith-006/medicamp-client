@@ -19,8 +19,16 @@ import axiosSecure from "../../Hooks/AxiousSecure";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import { Calendar, DollarSign, Users } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#6366f1", "#ec4899"];
+const COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#6366f1",
+  "#ec4899",
+];
 
 const StatCard = ({ icon: Icon, title, value, color }) => (
   <div className="bg-white p-4 rounded-xl shadow-lg flex items-center space-x-4">
@@ -43,7 +51,9 @@ const ParticipantAnalytics = ({ userEmail }) => {
   const { data: registrations = [], isLoading } = useQuery({
     queryKey: ["participant-analytics", userEmail],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/registered-participant?email=${userEmail}`);
+      const res = await axiosSecure.get(
+        `/registered-participant?email=${userEmail}`
+      );
       return res.data;
     },
   });
@@ -95,8 +105,13 @@ const ParticipantAnalytics = ({ userEmail }) => {
       transition={{ duration: 0.6 }}
       className="space-y-6 px-4 md:px-8 py-8"
     >
+      <Helmet>
+        <title>Analytics | Dashboard | MCMS</title>
+      </Helmet>
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">📊 Your Camp Analytics</h2>
+        <h2 className="text-3xl font-bold text-gray-800">
+          📊 Your Camp Analytics
+        </h2>
         <input
           type="date"
           {...register("filterDate")}
@@ -105,14 +120,31 @@ const ParticipantAnalytics = ({ userEmail }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Camps Joined" value={totalCamps} icon={Users} color="text-blue-500" />
-        <StatCard title="Total Fees Paid" value={`৳${totalFees}`} icon={DollarSign} color="text-green-500" />
-        <StatCard title="Active Days" value={activityTimeline.length} icon={Calendar} color="text-purple-500" />
+        <StatCard
+          title="Total Camps Joined"
+          value={totalCamps}
+          icon={Users}
+          color="text-blue-500"
+        />
+        <StatCard
+          title="Total Fees Paid"
+          value={`৳${totalFees}`}
+          icon={DollarSign}
+          color="text-green-500"
+        />
+        <StatCard
+          title="Active Days"
+          value={activityTimeline.length}
+          icon={Calendar}
+          color="text-purple-500"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Camp-wise Registrations</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            Camp-wise Registrations
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={campStats}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -139,7 +171,10 @@ const ParticipantAnalytics = ({ userEmail }) => {
                 label
               >
                 {campStats.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -149,14 +184,21 @@ const ParticipantAnalytics = ({ userEmail }) => {
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-lg">
-        <h3 className="text-lg font-semibold mb-4">Registration Activity Over Time</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          Registration Activity Over Time
+        </h3>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={activityTimeline}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <YAxis allowDecimals={false} />
             <Tooltip />
-            <Area type="monotone" dataKey="count" stroke="#10b981" fill="#bbf7d0" />
+            <Area
+              type="monotone"
+              dataKey="count"
+              stroke="#10b981"
+              fill="#bbf7d0"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>

@@ -14,11 +14,16 @@ import {
 } from "antd";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
-import { ArrowLeftOutlined, ConsoleSqlOutlined, UserAddOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  ConsoleSqlOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import { useForm, Controller } from "react-hook-form";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import useCurrentUser from "../../Hooks/useController";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -48,7 +53,6 @@ const CampDetails = () => {
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [registeredParticipants, setRegisteredParticipants] = useState(null);
 
-
   // react-hook-form setup
   const {
     control,
@@ -64,7 +68,7 @@ const CampDetails = () => {
         setLoading(true);
         setFetchError(null);
 
-        const res = await axiosSecure.get(`http://localhost:5000/camps/${id}`);
+        const res = await axiosSecure.get(`https://medicamp-server-jade.vercel.app/camps/${id}`);
         if (!res.data) {
           setFetchError("Camp not found");
         } else {
@@ -87,7 +91,7 @@ const CampDetails = () => {
   useEffect(() => {
     const fetchParticipants = async () => {
       const response = await axiosSecure.get(
-        "http://localhost:5000/registered-participant"
+        "https://medicamp-server-jade.vercel.app/registered-participant"
       );
       setRegisteredParticipants(response.data);
     };
@@ -124,7 +128,7 @@ const CampDetails = () => {
         participant.phone === data.phone
     );
 
-    console.log("already registered?: ", isAlreadyRegistered)
+    console.log("already registered?: ", isAlreadyRegistered);
 
     if (isAlreadyRegistered) {
       toast.error("❌ You are already registered for this camp!");
@@ -162,16 +166,16 @@ const CampDetails = () => {
       };
 
       await axios.post(
-        "http://localhost:5000/registered-participant",
+        "https://medicamp-server-jade.vercel.app/registered-participant",
         registrationData
       );
 
       await axios.patch(
-        `http://localhost:5000/camps/${id}/increment-participants`
+        `https://medicamp-server-jade.vercel.app/camps/${id}/increment-participants`
       );
 
       toast.success("🎉 Successfully joined the camp!");
-      navigate("/dashboard/participants/camps")
+      navigate("/dashboard/participants/camps");
       setModalVisible(false);
 
       // Optional UI update
@@ -212,11 +216,14 @@ const CampDetails = () => {
       variants={fadeIn}
       className="max-w-4xl mx-auto mt-10 px-4"
     >
+      <Helmet>
+        <title>Camp Details | MCMS</title>
+      </Helmet>
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate("/available-camps")}
         type="link"
-        className="mb-6"
+        className="mb-6 mt-14 text-black z-50"
       >
         Back to Camps
       </Button>

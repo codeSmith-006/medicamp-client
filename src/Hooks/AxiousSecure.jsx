@@ -2,7 +2,7 @@ import axios from "axios";
 
 // creating axios secure instance
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://medicamp-server-jade.vercel.app/",
 });
 
 // access token

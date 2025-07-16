@@ -7,7 +7,7 @@ const useStripePayment = () => {
     mutationFn: async (paymentData) => {
         console.log("Payment data: ", paymentData)
       const response = await axios.post(
-        `http://localhost:5000/create-payment-session`, // ✅ Correct backend URL
+        `https://medicamp-server-jade.vercel.app/create-payment-session`, // ✅ Correct backend URL
         paymentData
       );
 
