@@ -1,6 +1,6 @@
 # 🏥 Medical Camp Management System (MCMS)
 
-![MCMS Screenshot](./screenshot.png)
+![MCMS Screenshot](./Dashboard.png)
 
 ---
 
@@ -16,7 +16,7 @@ Whether you're on desktop, tablet, or mobile, MCMS offers a smooth, responsive e
 ## 🌐 Live Demo
 
 🎉 Check out the live project here:  
-👉 [https://your-live-site-url.com](https://your-live-site-url.com)
+👉 [MediCamp Live Link](https://carecamp-06.web.app/)
 
 ---
 
@@ -86,5 +86,5 @@ Whether you're on desktop, tablet, or mobile, MCMS offers a smooth, responsive e
 1. **Clone the repositories:**
 
 ```bash
-git clone https://github.com/yourusername/mcms-client.git
-git clone https://github.com/yourusername/mcms-server.git
+git clone https://github.com/codeSmith-006/medicamp-client.git
+git clone https://github.com/codeSmith-006/medicamp-server.git
