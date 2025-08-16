@@ -221,36 +221,47 @@ const TestimonialsSlider = () => {
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-        className="mt-16 bg-white rounded-2xl p-8 shadow-lg"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div>
-            <div className="text-3xl font-bold text-indigo-600 mb-2">
-              {testimonials.length}+
+      <div className="text-center mt-4 md:mt-8">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-3xl md:text-4xl font-bold text-gray-800 mb-8"
+        >
+          Our <span className="text-indigo-600">Achievements</span>
+        </motion.h2>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mt-16 bg-white rounded-2xl p-8 shadow-lg"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-indigo-600 mb-2">
+                {testimonials.length}+
+              </div>
+              <p className="text-gray-600">Happy Participants</p>
             </div>
-            <p className="text-gray-600">Happy Participants</p>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-indigo-600 mb-2">
-              {(
-                testimonials.reduce((sum, t) => sum + t.rating, 0) /
-                testimonials.length
-              ).toFixed(1)}
+            <div>
+              <div className="text-3xl font-bold text-indigo-600 mb-2">
+                {(
+                  testimonials.reduce((sum, t) => sum + t.rating, 0) /
+                  testimonials.length
+                ).toFixed(1)}
+              </div>
+              <p className="text-gray-600">Average Rating</p>
             </div>
-            <p className="text-gray-600">Average Rating</p>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-indigo-600 mb-2">
-              {testimonials.filter((t) => t.rating === 5).length}
+            <div>
+              <div className="text-3xl font-bold text-indigo-600 mb-2">
+                {testimonials.filter((t) => t.rating === 5).length}
+              </div>
+              <p className="text-gray-600">5-Star Reviews</p>
             </div>
-            <p className="text-gray-600">5-Star Reviews</p>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 };

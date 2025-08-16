@@ -65,27 +65,21 @@ const FAQSection = () => {
     AOS.init({ duration: 800 });
   }, []);
 
-  const headerVariants = {
-    rest: { opacity: 0.6, y: 10 },
-    hover: (custom) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: custom * 0.1, duration: 0.3 },
-    }),
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       transition={{ duration: 0.6 }}
       className="bg-white py-16 px-4 md:px-8"
     >
       <div className="max-w-5xl mx-auto" data-aos="fade-up">
+        {/* Heading */}
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
           📚 Frequently Asked Questions (FAQ)
         </h2>
 
+        {/* Collapse Panels */}
         <Collapse
           accordion
           ghost
@@ -100,26 +94,23 @@ const FAQSection = () => {
                 borderRadius: 12,
                 marginBottom: 12,
               }}
-              showArrow
               header={
-                <motion.div
-                  variants={headerVariants}
-                  initial="rest"
-                  whileHover="hover"
-                  animate="rest"
-                  custom={index}
-                  className="flex items-center"
-                >
+                <div className="flex items-center">
                   <QuestionCircleOutlined className="mr-2 text-blue-500" />
                   <span className="text-base md:text-lg font-semibold text-gray-800">
                     {faq.question}
                   </span>
-                </motion.div>
+                </div>
               }
             >
-              <p className="text-gray-700 text-sm md:text-base leading-relaxed">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-gray-700 text-sm md:text-base leading-relaxed"
+              >
                 {faq.answer}
-              </p>
+              </motion.p>
             </Panel>
           ))}
         </Collapse>
@@ -127,6 +118,5 @@ const FAQSection = () => {
     </motion.div>
   );
 };
-
 
 export default FAQSection;
