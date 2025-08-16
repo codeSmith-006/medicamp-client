@@ -62,7 +62,8 @@ const TestimonialsSlider = () => {
   };
 
   const getInitials = (name) => {
-    return name?.split(" ")
+    return name
+      ?.split(" ")
       .map((word) => word[0])
       .join("")
       .toUpperCase();
@@ -161,7 +162,7 @@ const TestimonialsSlider = () => {
                   transition={{ delay: index * 0.1 + 0.3 }}
                   className="text-gray-700 mb-6 leading-relaxed text-sm"
                 >
-                  "{testimonial.feedback}"
+                  {testimonial.feedback}
                 </motion.p>
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
