@@ -15,6 +15,7 @@ import useCurrentUser from "../../Hooks/useController";
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { currentUser, isLoading: userLoading } = useCurrentUser();
   // console.log("Current user: ", currentUser, "Loading: ", userLoading);
+
   const sidebarItems = [
     // Shared (if any)
     {
@@ -83,56 +84,67 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   ];
 
   return (
-    <div
-      className={`fixed inset-y-0 left-0 z-50 md:z-10 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">CampDash</h1>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <>
+      {/* Backdrop/Overlay for mobile and tablet screens */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        <nav className="space-y-2">
-          {sidebarItems.map((item) => (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              onClick={() => {
-                // Auto-close sidebar ONLY on small screens
-                if (window.innerWidth < 1024) {
-                  setSidebarOpen(false);
-                }
-              }}
-              className={({ isActive }) =>
-                `w-full flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? "bg-blue-50 text-blue-700 shadow-sm"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`
-              }
+      {/* Sidebar */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out xl:relative xl:translate-x-0 xl:z-10 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-gray-800">CampDash</h1>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="xl:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              {({ isActive }) => (
-                <>
-                  <item.icon
-                    className={`w-5 h-5 mr-3 ${
-                      isActive ? item.color : "text-gray-500"
-                    }`}
-                  />
-                  <span className="font-medium">{item.label}</span>
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <nav className="space-y-2">
+            {sidebarItems.map((item) => (
+              <NavLink
+                key={item.id}
+                to={item.path}
+                onClick={() => {
+                  // Auto-close sidebar ONLY on screens below xl (1280px)
+                  if (window.innerWidth < 1280) {
+                    setSidebarOpen(false);
+                  }
+                }}
+                className={({ isActive }) =>
+                  `w-full flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "bg-blue-50 text-blue-700 shadow-sm"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <item.icon
+                      className={`w-5 h-5 mr-3 ${
+                        isActive ? item.color : "text-gray-500"
+                      }`}
+                    />
+                    <span className="font-medium">{item.label}</span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

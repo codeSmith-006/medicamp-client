@@ -104,8 +104,9 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <div className="hidden text-black md:text-white lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
-          <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
           <AnimatedLink to="/about">About</AnimatedLink>
+          <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
+
           {authLoading ? (
             <span className="loading loading-spinner loading-md"></span>
           ) : !user ? (
@@ -197,8 +198,8 @@ const Navbar = () => {
             variants={menuVariants}
           >
             <AnimatedLink to="/">Home</AnimatedLink>
-            <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
             <AnimatedLink to="/about">About</AnimatedLink>
+            <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
             {authLoading ? (
               <span className="loading loading-spinner loading-md"></span>
             ) : !user ? (

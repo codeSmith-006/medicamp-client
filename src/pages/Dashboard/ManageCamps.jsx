@@ -1,14 +1,18 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
-import { Input, Table, Spin, Button } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Input, Table, Spin, Button, Card, Tag } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  TableOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 import UpdateCampModal from "./UpdateCampModal";
 import useCurrentUser from "../../Hooks/useController";
-import axiosSecure from "../../Hooks/AxiousSecure";
 import { Helmet } from "react-helmet-async";
 
 const fadeInUp = {
@@ -23,6 +27,7 @@ const ManageCamps = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState("table"); // table | grid
   const itemsPerPage = 5;
 
   const {
@@ -52,7 +57,9 @@ const ManageCamps = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`https://medicamp-server-jade.vercel.app/camps/${id}`);
+        await axios.delete(
+          `https://medicamp-server-jade.vercel.app/camps/${id}`
+        );
         toast.success("Camp deleted successfully");
         refetch();
       } catch (err) {
@@ -122,10 +129,24 @@ const ManageCamps = () => {
       <Helmet>
         <title>Manage Camp | Dashboard | MCMS</title>
       </Helmet>
-      <h2 className="text-3xl font-semibold text-indigo-700 mb-6">
-        📋 Manage Your Camps
-      </h2>
 
+      {/* Responsive Heading & Toggle */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6">
+        <h2 className="text-3xl font-semibold text-indigo-700">
+          📋 Manage Your Camps
+        </h2>
+        <Button
+          type="default"
+          icon={viewMode === "table" ? <AppstoreOutlined /> : <TableOutlined />}
+          onClick={() =>
+            setViewMode((prev) => (prev === "table" ? "grid" : "table"))
+          }
+        >
+          {viewMode === "table" ? "Grid View" : "Table View"}
+        </Button>
+      </div>
+
+      {/* Search */}
       <Input
         size="large"
         placeholder="Search by name, location or doctor..."
@@ -137,13 +158,14 @@ const ManageCamps = () => {
         className="mb-4"
       />
 
+      {/* Data Display */}
       {isLoading ? (
         <div className="flex justify-center py-10">
           <Spin size="large" />
         </div>
       ) : data.result.length === 0 ? (
         <p className="text-center text-gray-500">No camps found.</p>
-      ) : (
+      ) : viewMode === "table" ? (
         <Table
           dataSource={data.result}
           columns={columns}
@@ -152,9 +174,49 @@ const ManageCamps = () => {
           bordered
           className="rounded-lg shadow-lg overflow-x-auto"
         />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data.result.map((camp) => (
+            <Card
+              key={camp._id}
+              bordered
+              className="shadow-md rounded-xl hover:shadow-xl hover:-translate-y-1 transition duration-300"
+              title={
+                <span className="text-lg font-semibold">{camp.campName}</span>
+              }
+              actions={[
+                <EditOutlined
+                  key="edit"
+                  onClick={() => {
+                    setSelectedCamp(camp);
+                    setIsModalOpen(true);
+                  }}
+                />,
+                <DeleteOutlined
+                  key="delete"
+                  onClick={() => handleDelete(camp._id)}
+                  style={{ color: "red" }}
+                />,
+              ]}
+            >
+              <div className="space-y-2">
+                <Tag color="blue">
+                  {new Date(camp.dateTime).toLocaleString()}
+                </Tag>
+                <Tag color="green">{camp.location}</Tag>
+                <p>
+                  <strong>Doctor:</strong> {camp.healthcareProfessional}
+                </p>
+                <p>
+                  <strong>Participants:</strong> {camp.participantCount}
+                </p>
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {data.total > itemsPerPage && (
         <div className="flex justify-center mt-6 gap-2">
           <Button
@@ -179,7 +241,7 @@ const ManageCamps = () => {
         </div>
       )}
 
-      {/* DaisyUI Modal for Update */}
+      {/* Update Modal */}
       {isModalOpen && selectedCamp && (
         <UpdateCampModal
           camp={selectedCamp}
