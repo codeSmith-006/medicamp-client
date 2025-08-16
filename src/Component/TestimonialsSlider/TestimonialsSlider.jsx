@@ -19,10 +19,12 @@ const TestimonialsSlider = () => {
   });
 
   const nextTestimonial = () => {
+    if (testimonials.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const prevTestimonial = () => {
+    if (testimonials.length === 0) return;
     setCurrentIndex(
       (prev) => (prev - 1 + testimonials.length) % testimonials.length
     );
@@ -33,7 +35,7 @@ const TestimonialsSlider = () => {
   };
 
   useEffect(() => {
-    if (isAutoPlaying) {
+    if (isAutoPlaying && testimonials.length > 0) {
       const interval = setInterval(nextTestimonial, 3000);
       return () => clearInterval(interval);
     }
@@ -53,8 +55,9 @@ const TestimonialsSlider = () => {
   };
 
   const getVisibleTestimonials = () => {
+    if (testimonials.length === 0) return [];
     const visible = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < Math.min(3, testimonials.length); i++) {
       const index = (currentIndex + i) % testimonials.length;
       visible.push({ ...testimonials[index], position: i });
     }
@@ -91,8 +94,13 @@ const TestimonialsSlider = () => {
     return <div className="text-center py-10">Loading testimonials...</div>;
   }
 
+  if (!testimonials.length) {
+    return <div className="text-center py-10">No testimonials available.</div>;
+  }
+
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-12 bg-gray-50 min-h-screen">
+      {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -106,7 +114,9 @@ const TestimonialsSlider = () => {
         </p>
       </motion.div>
 
+      {/* Slider */}
       <div className="relative">
+        {/* Navigation */}
         <div className="absolute top-0 right-0 flex space-x-2 z-10">
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -191,6 +201,7 @@ const TestimonialsSlider = () => {
           </AnimatePresence>
         </div>
 
+        {/* Dots */}
         <div className="flex justify-center mt-12 space-x-2">
           {testimonials.map((_, index) => (
             <motion.button
@@ -209,6 +220,7 @@ const TestimonialsSlider = () => {
           ))}
         </div>
 
+        {/* Progress bar */}
         <div className="mt-8 w-full bg-gray-200 rounded-full h-1">
           <motion.div
             className="bg-indigo-600 h-1 rounded-full"
@@ -221,6 +233,7 @@ const TestimonialsSlider = () => {
         </div>
       </div>
 
+      {/* Achievements */}
       <div className="text-center mt-4 md:mt-8">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}

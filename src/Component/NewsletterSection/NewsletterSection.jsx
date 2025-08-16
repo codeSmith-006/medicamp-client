@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { MailOutlined } from "@ant-design/icons";
+import toast from "react-hot-toast";
 
 const NewsletterSection = () => {
   const {
@@ -12,7 +13,7 @@ const NewsletterSection = () => {
 
   const onSubmit = (data) => {
     console.log("Subscribed Email:", data.email);
-    alert(`Thank you for subscribing: ${data.email}`);
+    toast.success(`Thank you for subscribing: ${data.email}`);
     reset();
   };
 

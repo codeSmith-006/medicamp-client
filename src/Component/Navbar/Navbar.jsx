@@ -46,7 +46,7 @@ const Navbar = () => {
     },
   });
 
-  console.log("current user: ", dbUser)
+  console.log("current user: ", dbUser);
 
   const dropdownItems = [
     {
@@ -83,6 +83,8 @@ const Navbar = () => {
     },
   ];
 
+  console.log("current user: ", user);
+
   return (
     <div className="bg-gradient-to-r from-[#101828] via-[#1A2235] to-[#2A334D] shadow-md fixed top-0 left-0 w-full z-50">
       <div className="navbar justify-between px-4 lg:px-8">
@@ -103,6 +105,40 @@ const Navbar = () => {
         <div className="hidden text-black md:text-white lg:flex items-center gap-6">
           <AnimatedLink to="/">Home</AnimatedLink>
           <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
+          <AnimatedLink to="/about">About</AnimatedLink>
+          {authLoading ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : !user ? (
+            ""
+          ) : (
+            <AnimatedLink
+              to={
+                user?.email === "ryan@admin2.com"
+                  ? "/dashboard/organizer/profile"
+                  : "/dashboard/participants/profile"
+              }
+            >
+              Profile
+            </AnimatedLink>
+          )}
+
+          {authLoading ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : !user ? (
+            ""
+          ) : (
+            <AnimatedLink
+              to={
+                user?.email === "ryan@admin2.com"
+                  ? "/dashboard/organizer/manage-camps"
+                  : "/dashboard/participants/camps"
+              }
+            >
+              {user?.email === "ryan@admin2.com"
+                ? "Manage Camps"
+                : "My Registrations"}
+            </AnimatedLink>
+          )}
 
           {authLoading ? (
             <span className="loading loading-spinner loading-md"></span>
@@ -111,7 +147,10 @@ const Navbar = () => {
           ) : (
             <div className="relative">
               <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
-                <a onClick={(e) => e.preventDefault()} className="cursor-pointer">
+                <a
+                  onClick={(e) => e.preventDefault()}
+                  className="cursor-pointer"
+                >
                   <Space className="flex items-center gap-2">
                     <img
                       src={dbUser?.photoUrl || user?.photoURL}
@@ -120,7 +159,9 @@ const Navbar = () => {
                     />
                     <div className="flex flex-col items-start text-white">
                       <span className="text-sm font-medium">
-                        {userLoading ? "Loading..." : dbUser?.name || user.displayName}
+                        {userLoading
+                          ? "Loading..."
+                          : dbUser?.name || user.displayName}
                       </span>
                       <span className="text-xs text-gray-300">
                         {dbUser?.role || "User"}
@@ -157,7 +198,39 @@ const Navbar = () => {
           >
             <AnimatedLink to="/">Home</AnimatedLink>
             <AnimatedLink to="/available-camps">Available Camps</AnimatedLink>
-
+            <AnimatedLink to="/about">About</AnimatedLink>
+            {authLoading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : !user ? (
+              ""
+            ) : (
+              <AnimatedLink
+                to={
+                  user?.email === "ryan@admin2.com"
+                    ? "/dashboard/organizer/manage-camps"
+                    : "/dashboard/participants/camps"
+                }
+              >
+                {user?.email === "ryan@admin2.com"
+                  ? "Manage Camps"
+                  : "My Registrations"}
+              </AnimatedLink>
+            )}
+            {authLoading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : !user ? (
+              ""
+            ) : (
+              <AnimatedLink
+                to={
+                  user?.email === "ryan@admin2.com"
+                    ? "/dashboard/organizer/profile"
+                    : "/dashboard/participants/profile"
+                }
+              >
+                Profile
+              </AnimatedLink>
+            )}
             {!user ? (
               <JoinUsButton />
             ) : (
@@ -170,7 +243,9 @@ const Navbar = () => {
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">
-                      {userLoading ? "Loading..." : dbUser?.name || user.displayName}
+                      {userLoading
+                        ? "Loading..."
+                        : dbUser?.name || user.displayName}
                     </span>
                     <span className="text-xs text-gray-500">
                       {dbUser?.role || "User"}
