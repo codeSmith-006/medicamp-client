@@ -2,6 +2,7 @@ import { Facebook, Linkedin, Instagram } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "../../assets/CareCamp logo.png";
 import { Send } from "lucide-react";
+import toast from "react-hot-toast";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -10,10 +11,10 @@ const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      alert("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
-    alert(`Subscribed with ${email}`);
+    toast.success(`Subscribed with ${email}`);
     setEmail("");
   };
 
@@ -52,12 +53,15 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="/camps" className="hover:text-white transition">
+              <a
+                href="/dashboard/participants/camps"
+                className="hover:text-white transition"
+              >
                 Camps
               </a>
             </li>
             <li>
-              <a href="/login" className="hover:text-white transition">
+              <a href="/join-us" className="hover:text-white transition">
                 Join Us
               </a>
             </li>
@@ -73,7 +77,7 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold text-white mb-2">Contact</h3>
           <ul className="space-y-2 text-sm">
-            <li>Email: support@carecamp.com</li>
+            <li>Email: ryanrehan.pc@gmail.com</li>
             <li>Phone: +880-1722-414475</li>
             <li>Address: Dhaka, Bangladesh</li>
           </ul>
@@ -84,25 +88,18 @@ const Footer = () => {
           <h3 className="text-lg font-semibold text-white mb-2">Follow Us</h3>
           <div className="flex gap-4 mt-2">
             <a
-              href="#"
+              href="https://www.facebook.com/ryanrehan.facebook"
               className="hover:text-white transition"
               aria-label="Facebook"
             >
               <Facebook className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="linkedin.com/in/ryanrehan06"
               className="hover:text-white transition"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
-            </a>
-            <a
-              href="#"
-              className="hover:text-white transition"
-              aria-label="Instagram"
-            >
-              <Instagram className="w-5 h-5" />
             </a>
           </div>
         </div>
