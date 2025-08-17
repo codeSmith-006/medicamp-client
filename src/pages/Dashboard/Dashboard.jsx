@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
+    <div className="min-h-screen  bg-gray-50 relative">
       <Helmet>
         <title>Dashboard | MCMS</title>
       </Helmet>

@@ -10,6 +10,7 @@ import GradientButton from "../GradientButton/GradientButton";
 import { FaSignInAlt } from "react-icons/fa";
 import AuthContext from "../../Context/AuthContext";
 import { createUser } from "../../APIs/usersApi";
+import axios from "axios";
 
 const LoginForm = ({ onSwitch }) => {
   // navigate
@@ -24,14 +25,38 @@ const LoginForm = ({ onSwitch }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { login, loginWithGoogle, updateUserProfile } = use(AuthContext);
+  const { login, loginWithGoogle, updateUserProfile, setUser } =
+    use(AuthContext);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
+
     try {
-      await login(data.email, data.password);
-      toast.success("Logged in successfully!");
-      navigate("/");
+      // Step 1: Firebase Login
+      const result = await login(data.email, data.password);
+
+      if (result.user) {
+        const loggedUser = result.user;
+        toast.success("Logged in successfully!");
+
+        // Step 2: Get JWT from your backend
+        const jwtResponse = await axios.post(
+          "https://medicamp-server-jth3.onrender.com/jwt",
+          {
+            email: loggedUser.email,
+          }
+        );
+
+        const token = jwtResponse.data?.token;
+
+        if (token) {
+          localStorage.setItem("token", token);
+          setUser(loggedUser);
+        }
+        // Step 5: Redirect
+        navigate("/");
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message || "Login failed. Please try again.");
@@ -50,6 +75,7 @@ const LoginForm = ({ onSwitch }) => {
       if (user) {
         const { displayName, email, photoURL } = user;
 
+        // 1️⃣ Prepare payload for DB sync
         const payload = {
           name: displayName,
           email,
@@ -57,6 +83,7 @@ const LoginForm = ({ onSwitch }) => {
           role: "user", // default role
         };
 
+        // 2️⃣ Sync user to your MongoDB via backend
         try {
           const res = await createUser(payload);
           console.log("User sync result:", res);
@@ -70,7 +97,34 @@ const LoginForm = ({ onSwitch }) => {
           console.error("Error while saving user to DB:", error);
           toast.error("User sync failed.");
         }
+
+        // 3️⃣ Get JWT token from backend
+        try {
+          const jwtRes = await axios.post(
+            `https://medicamp-server-jth3.onrender.com/jwt`,
+            {
+              email, // send only email to issue token
+            }
+          );
+
+          const token = jwtRes.data?.token;
+
+          if (token) {
+            // 4️⃣ Store token in localStorage
+            localStorage.setItem("token", token);
+            setUser(user);
+            console.log("JWT Token stored:", token);
+          } else {
+            toast.error("Failed to receive JWT token.");
+          }
+        } catch (jwtError) {
+          console.error("JWT token request failed:", jwtError);
+          toast.error("Authentication token generation failed.");
+        }
+
+        // 5️⃣ Navigate after everything is successful
         navigate("/");
+        window.location.reload();
       }
     } catch (error) {
       console.error("Google login error:", error);

@@ -132,13 +132,13 @@ const RegisterForm = ({ onSwitch }) => {
       const result = await registerWithEmail(email, password);
 
       if (result.user) {
-        // Update user profile with name and photo URL
+        // 1️⃣ Update Firebase profile
         await updateUserProfile({ displayName: name, photoURL: photoUrl });
 
-        setEmailLoading(false);
+        // 2️⃣ Navigate early for faster UX
         navigate("/");
 
-        // sending the users data to the backend
+        // 3️⃣ Send user data to your database
         const payload = {
           name,
           email,
@@ -153,13 +153,33 @@ const RegisterForm = ({ onSwitch }) => {
             toast.success("Registered successfully!");
           }
         } catch (error) {
-          console.log("Error while post users data to database: ", error);
+          console.log("Error while saving user to DB: ", error);
         }
+
+        // 4️⃣ Now send the email to backend to receive JWT
+        try {
+          const jwtRes = await axios.post(
+            `https://medicamp-server-jth3.onrender.com/jwt`,
+            {
+              email,
+            }
+          );
+
+          // 5️⃣ Save token in localStorage
+          localStorage.setItem("token", jwtRes.data?.token);
+          console.log("JWT saved:", jwtRes.data?.token);
+        } catch (err) {
+          console.error("JWT fetch failed:", err);
+          toast.error("Authentication token failed to set");
+        }
+
+        setEmailLoading(false);
+        window.location.reload();
       }
     } catch (error) {
-      console.error("Error while registration with email and password:", error);
-      setEmailLoading(false);
+      console.error("Error during registration:", error);
       toast.error(error.message || "Registration failed");
+      setEmailLoading(false);
     }
   };
 
@@ -173,7 +193,7 @@ const RegisterForm = ({ onSwitch }) => {
       if (result.user) {
         const { displayName, email, photoURL } = result.user;
 
-        // Prepare payload for backend
+        // 1️⃣ Prepare payload for DB sync
         const payload = {
           name: displayName,
           email,
@@ -181,6 +201,7 @@ const RegisterForm = ({ onSwitch }) => {
           role: "user", // default role
         };
 
+        // 2️⃣ Sync user to your backend
         try {
           const response = await createUser(payload);
           console.log("User creation result:", response);
@@ -195,14 +216,33 @@ const RegisterForm = ({ onSwitch }) => {
           toast.error("Failed to save user to database.");
         }
 
+        // 3️⃣ Request JWT from backend
+        try {
+          const jwtRes = await axios.post(
+            `https://medicamp-server-jth3.onrender.com/jwt`,
+            {
+              email,
+            }
+          );
+
+          // 4️⃣ Store token in localStorage
+          localStorage.setItem("token", jwtRes.data?.token);
+          console.log("JWT saved:", jwtRes.data?.token);
+        } catch (jwtError) {
+          console.error("JWT error:", jwtError);
+          toast.error("Failed to set authentication token.");
+        }
+
+        // 5️⃣ Final success flow
         toast.success("Logged in with Google!");
-        setGoogleLoading(false);
         navigate("/");
+        window.location.reload();
       }
     } catch (error) {
       console.error("Google login error:", error);
-      setGoogleLoading(false);
       toast.error(error.message || "Google login failed");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 

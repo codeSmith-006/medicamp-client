@@ -68,7 +68,9 @@ const CampDetails = () => {
         setLoading(true);
         setFetchError(null);
 
-        const res = await axiosSecure.get(`https://medicamp-server-jade.vercel.app/camps/${id}`);
+        const res = await axiosSecure.get(
+          `https://medicamp-server-jth3.onrender.com/camps/${id}`
+        );
         if (!res.data) {
           setFetchError("Camp not found");
         } else {
@@ -91,7 +93,7 @@ const CampDetails = () => {
   useEffect(() => {
     const fetchParticipants = async () => {
       const response = await axiosSecure.get(
-        "https://medicamp-server-jade.vercel.app/registered-participant"
+        "https://medicamp-server-jth3.onrender.com/registered-participant"
       );
       setRegisteredParticipants(response.data);
     };
@@ -166,12 +168,12 @@ const CampDetails = () => {
       };
 
       await axios.post(
-        "https://medicamp-server-jade.vercel.app/registered-participant",
+        "https://medicamp-server-jth3.onrender.com/registered-participant",
         registrationData
       );
 
       await axios.patch(
-        `https://medicamp-server-jade.vercel.app/camps/${id}/increment-participants`
+        `https://medicamp-server-jth3.onrender.com/camps/${id}/increment-participants`
       );
 
       toast.success("🎉 Successfully joined the camp!");

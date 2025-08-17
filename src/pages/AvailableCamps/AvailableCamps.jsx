@@ -26,7 +26,7 @@ const AvailableCamps = () => {
     queryKey: ["available-camps", search, sort, currentPage],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `https://medicamp-server-jade.vercel.app/camps?search=${search}&sort=${sort}&page=${currentPage}&limit=${limit}`
+        `https://medicamp-server-jth3.onrender.com/camps?search=${search}&sort=${sort}&page=${currentPage}&limit=${limit}`
       );
       return res.data;
     },

@@ -84,7 +84,7 @@ const AddCamp = () => {
     // post camps data to the database
     try {
       const response = await axios.post(
-        "https://medicamp-server-jade.vercel.app/camps",
+        "https://medicamp-server-jth3.onrender.com/camps",
         campData
       );
 

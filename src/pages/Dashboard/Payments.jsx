@@ -14,7 +14,7 @@ const Payments = () => {
     const fetchTransactions = async () => {
       try {
         const { data } = await axiosSecure.get(
-          "https://medicamp-server-jade.vercel.app/registered-participant"
+          "https://medicamp-server-jth3.onrender.com/registered-participant"
         );
 
         const filtered = data
@@ -102,7 +102,7 @@ const Payments = () => {
       transition={{ duration: 0.4 }}
     >
       <Helmet>
-        <title>Payment  History | Dashboard | MCMS</title>
+        <title>Payment History | Dashboard | MCMS</title>
       </Helmet>
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">
         Stripe Transactions

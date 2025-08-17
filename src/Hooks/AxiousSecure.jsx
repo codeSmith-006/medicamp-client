@@ -2,7 +2,7 @@ import axios from "axios";
 
 // creating axios secure instance
 const axiosSecure = axios.create({
-  baseURL: "https://medicamp-server-jade.vercel.app/",
+  baseURL: "https://medicamp-server-jth3.onrender.com/",
 });
 
 // access token
@@ -10,10 +10,12 @@ let accessToken = null;
 
 // get access token
 export let setAccessToken = (token) => {
-  accessToken = token;
+  // accessToken = token;
   // console.log(accessToken);
 };
 
+accessToken = localStorage.getItem("token");
+console.log("token: ", accessToken);
 // implementing axios interceptor
 axiosSecure.interceptors.request.use(async (config) => {
   config.headers.Authorization = `Bearer ${accessToken}`;
@@ -21,7 +23,7 @@ axiosSecure.interceptors.request.use(async (config) => {
 });
 
 // // handling error for status 401 403
-// axiosSecure.interceptors.response.use(
+// axiosSecure.interceptors.re sponse.use(
 //   (response) => {
 //     return response; // returning the response
 //   },

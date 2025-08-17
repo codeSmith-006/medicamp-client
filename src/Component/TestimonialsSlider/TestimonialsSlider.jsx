@@ -12,7 +12,7 @@ const TestimonialsSlider = () => {
     queryKey: ["feedback"],
     queryFn: async () => {
       const res = await axios.get(
-        "https://medicamp-server-jade.vercel.app/feedback"
+        "https://medicamp-server-jth3.onrender.com/feedback"
       );
       return res.data || [];
     },

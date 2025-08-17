@@ -21,7 +21,7 @@ const PaymentCancelled = () => {
 
       try {
         const res = await axios.delete(
-          `https://medicamp-server-jade.vercel.app/delete-registration?campId=${campId}&email=${email}`
+          `https://medicamp-server-jth3.onrender.com/delete-registration?campId=${campId}&email=${email}`
         );
 
         if (res.data.deletedCount > 0) {

@@ -17,15 +17,15 @@ const PaymentSuccess = () => {
     const fetchSession = async () => {
       try {
         const { data } = await axios.get(
-          `https://medicamp-server-jade.vercel.app/session-details/${sessionId}`
+          `https://medicamp-server-jth3.onrender.com/session-details/${sessionId}`
         );
-        console.log("payment data: ", data)
+        console.log("payment data: ", data);
         const transactionId = data.payment_intent;
         const campId = data.metadata?.campId;
 
         // Send patch request to update status + transactionId
         const result = await axios.patch(
-          `https://medicamp-server-jade.vercel.app/update-payment-status/${campId}`,
+          `https://medicamp-server-jth3.onrender.com/update-payment-status/${campId}`,
           {
             participantEmail: data.customer_email,
             paymentStatus: "paid",
@@ -33,7 +33,7 @@ const PaymentSuccess = () => {
           }
         );
 
-        console.log("Payment status: ", result.data)
+        console.log("Payment status: ", result.data);
 
         toast.success("✅ Payment confirmed!");
         setTransactionId(transactionId);

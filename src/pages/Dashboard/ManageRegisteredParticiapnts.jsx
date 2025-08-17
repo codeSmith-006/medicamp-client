@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import {
-  Table,
-  Button,
-  Tag,
-  Input,
-  Modal,
-  Space,
-  message,
-  Tooltip,
-  Spin,
-} from "antd";
+import { Table, Button, Tag, Input, Modal, Space, Tooltip, Spin } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  EyeOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  EnvironmentOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import { motion } from "framer-motion";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -19,7 +16,6 @@ import toast from "react-hot-toast";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import { Helmet } from "react-helmet-async";
 
-// Simulated current organizer's email
 const currentOrganizerEmail = "organizer@example.com"; // Replace with real user logic
 
 const ManageRegisteredParticipants = () => {
@@ -28,7 +24,6 @@ const ManageRegisteredParticipants = () => {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch participants using TanStack Query
   const {
     data: participants = [],
     isLoading,
@@ -38,13 +33,12 @@ const ManageRegisteredParticipants = () => {
     queryKey: ["registered-participants", currentOrganizerEmail],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `https://medicamp-server-jade.vercel.app/all-registered-participant?email=${currentOrganizerEmail}`
+        `https://medicamp-server-jth3.onrender.com/all-registered-participant?email=${currentOrganizerEmail}`
       );
       return res.data;
     },
   });
 
-  // Filtered by search
   const filtered = participants.filter((item) =>
     `${item.campName} ${item.participantName} ${item.healthcareProfessional}`
       .toLowerCase()
@@ -53,10 +47,9 @@ const ManageRegisteredParticipants = () => {
 
   const handleConfirmStatus = async (record) => {
     if (record.paymentStatus !== "paid") return;
-
     try {
       await axios.patch(
-        `https://medicamp-server-jade.vercel.app/confirm-participant/${record._id}`
+        `https://medicamp-server-jth3.onrender.com/confirm-participant/${record._id}`
       );
       toast.success("Participant confirmed");
       refetch();
@@ -79,7 +72,7 @@ const ManageRegisteredParticipants = () => {
     if (confirm.isConfirmed) {
       try {
         await axiosSecure.delete(
-          `https://medicamp-server-jade.vercel.app/delete-registration/${id}`
+          `https://medicamp-server-jth3.onrender.com/delete-registration/${id}`
         );
         toast.success("Registration cancelled");
         refetch();
@@ -195,7 +188,8 @@ const ManageRegisteredParticipants = () => {
       <Helmet>
         <title>Manage Participants | Dashboard | MCMS</title>
       </Helmet>
-      <div className="mb-6 flex justify-between items-center">
+
+      <div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <h2 className="text-2xl font-bold text-gray-800">
           📋 Registered Participants
         </h2>
@@ -204,21 +198,87 @@ const ManageRegisteredParticipants = () => {
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          style={{ width: 300 }}
+          style={{ width: 280 }}
         />
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={filtered}
-        pagination={{
-          current: currentPage,
-          pageSize: 10,
-          onChange: (page) => setCurrentPage(page),
-        }}
-        rowKey="_id"
-        bordered
-      />
+      {/* Desktop Table */}
+      <div className="hidden md:block">
+        <Table
+          columns={columns}
+          dataSource={filtered}
+          pagination={{
+            current: currentPage,
+            pageSize: 10,
+            onChange: (page) => setCurrentPage(page),
+          }}
+          rowKey="_id"
+          bordered
+        />
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {filtered.map((record) => {
+          const isCancelDisabled =
+            record.paymentStatus === "paid" &&
+            record.confirmationStatus === "confirmed";
+          return (
+            <div
+              key={record._id}
+              className="bg-white rounded-lg shadow-md border border-gray-100 p-4"
+            >
+              <h3 className="text-lg font-semibold text-indigo-600 mb-2">
+                {record.campName}
+              </h3>
+              <p className="text-gray-700">
+                <strong>Participant:</strong> {record.participantName}
+              </p>
+              <p>
+                <Tag color={record.paymentStatus === "paid" ? "green" : "red"}>
+                  {record.paymentStatus}
+                </Tag>
+                <Tag
+                  color={
+                    record.confirmationStatus === "confirmed"
+                      ? "blue"
+                      : "orange"
+                  }
+                >
+                  {record.confirmationStatus}
+                </Tag>
+              </p>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  size="small"
+                  icon={<EyeOutlined />}
+                  onClick={() => {
+                    setSelectedParticipant(record);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  View
+                </Button>
+                <Button
+                  size="small"
+                  disabled={record.paymentStatus !== "paid"}
+                  onClick={() => handleConfirmStatus(record)}
+                >
+                  Confirm
+                </Button>
+                <Button
+                  size="small"
+                  danger
+                  disabled={isCancelDisabled}
+                  onClick={() => handleCancel(record._id, isCancelDisabled)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       {/* Participant Detail Modal */}
       <Modal

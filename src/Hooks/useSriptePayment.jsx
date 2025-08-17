@@ -5,9 +5,9 @@ import toast from "react-hot-toast";
 const useStripePayment = () => {
   return useMutation({
     mutationFn: async (paymentData) => {
-        console.log("Payment data: ", paymentData)
+      console.log("Payment data: ", paymentData);
       const response = await axios.post(
-        `https://medicamp-server-jade.vercel.app/create-payment-session`, // ✅ Correct backend URL
+        `https://medicamp-server-jth3.onrender.com/create-payment-session`, // ✅ Correct backend URL
         paymentData
       );
 
@@ -28,4 +28,4 @@ const useStripePayment = () => {
   });
 };
 
-export default useStripePayment
+export default useStripePayment;

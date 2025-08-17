@@ -40,10 +40,13 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
         dateTime: data.dateTime ? data.dateTime.toISOString() : null,
       };
 
-      console.log("updated data: ", updateData)
+      console.log("updated data: ", updateData);
 
       // patch request to update camp
-      await axios.patch(`https://medicamp-server-jade.vercel.app/camps/${camp._id}`, updateData);
+      await axios.patch(
+        `https://medicamp-server-jth3.onrender.com/camps/${camp._id}`,
+        updateData
+      );
 
       toast.success("Camp updated successfully");
       onUpdated();

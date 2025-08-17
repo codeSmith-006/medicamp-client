@@ -27,6 +27,7 @@ import PaymentSuccess from "../pages/Dashboard/PaymentSuccess";
 import PaymentCancelled from "../pages/Dashboard/paymentCancelled";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import About from "../pages/About/About";
+import AdminAnalytics from "../pages/Dashboard/AdminAnalytics";
 
 const Router = createBrowserRouter([
   {
@@ -43,7 +44,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "about",
-        Component: About
+        Component: About,
       },
       {
         path: "available-camps",
@@ -165,6 +166,17 @@ const Router = createBrowserRouter([
           {
             path: "/dashboard/organizer/add-camp",
             Component: AddCamp,
+          },
+        ],
+      },
+
+      // analytics for admin
+      {
+        element: <RoleBasedRoute allowedRoles={["admin"]} />,
+        children: [
+          {
+            path: "/dashboard/organizer/analytics",
+            Component: AdminAnalytics,
           },
         ],
       },
