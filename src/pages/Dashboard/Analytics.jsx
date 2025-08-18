@@ -124,7 +124,7 @@ const ParticipantAnalytics = ({ userEmail }) => {
           title="Total Camps Joined"
           value={totalCamps}
           icon={Users}
-          color="text-blue-500"
+          color="text-blue-400"
         />
         <StatCard
           title="Total Fees Paid"

@@ -1,18 +1,15 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   CalendarOutlined,
   EnvironmentOutlined,
   UserOutlined,
   TeamOutlined,
-  DollarOutlined,
-  StarFilled,
-  HeartOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
-const CampCard = ({ camp }) => {
+const CampCard = ({ camp, isDarkMode }) => {
   const {
     _id,
     campName,
@@ -31,7 +28,8 @@ const CampCard = ({ camp }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="relative bg-white rounded-2xl shadow-lg p-0 overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:scale-[1.015]"
+      className={`relative rounded-2xl shadow-lg p-0 overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:scale-[1.015] 
+        ${isDarkMode ? "bg-slate-800" : "bg-white"}`}
     >
       {/* Top section with image */}
       <div className="relative w-full h-48 overflow-hidden">
@@ -47,11 +45,19 @@ const CampCard = ({ camp }) => {
 
       {/* Info section */}
       <div className="p-4 space-y-3">
-        <h2 className="text-xl font-semibold text-gray-800 leading-tight">
+        <h2
+          className={`text-xl font-semibold leading-tight ${
+            isDarkMode ? "text-slate-100" : "text-gray-800"
+          }`}
+        >
           {campName}
         </h2>
 
-        <div className="flex flex-col items-start gap-2 text-gray-600 text-sm">
+        <div
+          className={`flex flex-col items-start gap-2 text-sm ${
+            isDarkMode ? "text-slate-400" : "text-gray-600"
+          }`}
+        >
           <div className="flex items-center gap-2">
             <EnvironmentOutlined />
             <span>{location}</span>
@@ -73,15 +79,33 @@ const CampCard = ({ camp }) => {
           </div>
         </div>
 
-        <div className="pt-2 border-t border-gray-100">
-          <p className="text-xs text-green-600">Consultation Fees</p>
+        <div
+          className={`pt-2 border-t ${
+            isDarkMode ? "border-slate-600" : "border-gray-100"
+          }`}
+        >
+          <p
+            className={`text-xs ${
+              isDarkMode ? "text-green-400" : "text-green-600"
+            }`}
+          >
+            Consultation Fees
+          </p>
           <div className="flex items-center justify-between">
-            <p className="text-xl font-bold text-green-600">
+            <p
+              className={`text-xl font-bold ${
+                isDarkMode ? "text-green-400" : "text-green-600"
+              }`}
+            >
               {campFees > 0 ? `৳${campFees}` : "Free"}
             </p>
             <NavLink
               to={`/available-camps/camps/${_id}`}
-              className="bg-blue-400 text-white px-4 py-2 text-sm rounded-full font-semibold hover:bg-blue-500 transition-all"
+              className={`px-4 py-2 text-sm rounded-full font-semibold transition-all ${
+                isDarkMode
+                  ? "bg-blue-500 hover:bg-blue-600 text-white"
+                  : "bg-blue-400 hover:bg-blue-400 text-white"
+              }`}
             >
               View Details
             </NavLink>

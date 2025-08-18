@@ -60,7 +60,7 @@ const faqs = [
   },
 ];
 
-const FAQSection = () => {
+const FAQSection = ({ isDarkMode }) => {
   useEffect(() => {
     AOS.init({ duration: 800 });
   }, []);
@@ -71,12 +71,18 @@ const FAQSection = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className="bg-white py-16 px-4 md:px-8"
+      className={`py-16 px-4 md:px-8 transition-colors duration-500 ${
+        isDarkMode ? "bg-slate-900" : "bg-white"
+      }`}
     >
       <div className="max-w-5xl mx-auto" data-aos="fade-up">
         {/* Heading */}
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
-          📚 Frequently Asked Questions (FAQ)
+        <h2
+          className={`text-3xl md:text-4xl font-bold text-center mb-8 transition-colors duration-500 ${
+            isDarkMode ? "text-slate-100" : "text-gray-800"
+          }`}
+        >
+          Frequently Asked Questions (FAQ)
         </h2>
 
         {/* Collapse Panels */}
@@ -84,20 +90,28 @@ const FAQSection = () => {
           accordion
           ghost
           expandIconPosition="right"
-          className="rounded-xl bg-white"
+          className="rounded-xl transition-colors duration-500"
         >
           {faqs.map((faq, index) => (
             <Panel
               key={index}
               style={{
-                background: "#f9f9f9",
+                background: isDarkMode ? "#1f2937" : "#f9f9f9",
                 borderRadius: 12,
                 marginBottom: 12,
               }}
               header={
                 <div className="flex items-center">
-                  <QuestionCircleOutlined className="mr-2 text-blue-500" />
-                  <span className="text-base md:text-lg font-semibold text-gray-800">
+                  <QuestionCircleOutlined
+                    className={`mr-2 transition-colors duration-500 ${
+                      isDarkMode ? "text-blue-400" : "text-blue-400"
+                    }`}
+                  />
+                  <span
+                    className={`text-base md:text-lg font-semibold transition-colors duration-500 ${
+                      isDarkMode ? "text-slate-100" : "text-gray-800"
+                    }`}
+                  >
                     {faq.question}
                   </span>
                 </div>
@@ -107,7 +121,9 @@ const FAQSection = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="text-gray-700 text-sm md:text-base leading-relaxed"
+                className={`text-sm md:text-base leading-relaxed transition-colors duration-500 ${
+                  isDarkMode ? "text-slate-400" : "text-gray-700"
+                }`}
               >
                 {faq.answer}
               </motion.p>

@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-const ACTIVE_COLOR = "#3B82F6"; // Tailwind blue-500 hex
+const ACTIVE_COLOR = "#3B82F6"; // Tailwind blue-400 hex
 
 const AnimatedLink = ({ to, children }) => {
   const [isHovered, setIsHovered] = useState(false);

@@ -180,7 +180,7 @@ const doctors = [
   },
 ];
 
-const DoctorsSection = () => {
+const DoctorsSection = ({ isDarkMode }) => {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -188,16 +188,22 @@ const DoctorsSection = () => {
   const handleSeeLess = () => setVisibleCount(6);
 
   return (
-    <section className="py-16 bg-gray-50 :bg-[#191919]">
+    <section
+      className={`py-16 transition-colors duration-500 ${
+        isDarkMode ? "bg-slate-900" : "bg-gray-50"
+      }`}
+    >
       <div className="container mx-auto px-6 lg:px-12 text-center">
         <motion.h2
           ref={ref}
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-3xl md:text-4xl font-bold mb-12 text-gray-800 :text-gray-200"
+          className={`text-3xl md:text-4xl font-bold mb-12 transition-colors duration-500 ${
+            isDarkMode ? "text-slate-100" : "text-black"
+          }`}
         >
-          Meet Our <span className="text-blue-500">Doctors</span>
+          Meet Our <span className="text-blue-400">Doctors</span>
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -207,9 +213,11 @@ const DoctorsSection = () => {
               initial={{ opacity: 0, y: 50 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: index * 0.2 }}
-              className="bg-white :bg-[#2F2F2F] rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition"
+              className={`rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 ${
+                isDarkMode ? "bg-slate-800" : "bg-white"
+              }`}
             >
-              <div className="w-56 h-56 mx-auto overflow-hidden rounded-full">
+              <div className="w-56 h-56 mt-4 mx-auto overflow-hidden rounded-full">
                 <img
                   src={doc.image}
                   alt={doc.name}
@@ -218,10 +226,14 @@ const DoctorsSection = () => {
               </div>
 
               <div className="p-6 text-left">
-                <h3 className="text-xl font-semibold text-gray-800 :text-gray-100">
+                <h3
+                  className={`text-xl font-semibold transition-colors duration-500 ${
+                    isDarkMode ? "text-slate-100" : "text-gray-800"
+                  }`}
+                >
                   {doc.name}
                 </h3>
-                <p className="text-blue-500 font-medium">
+                <p className="text-blue-400 font-medium">
                   {doc.specialization}
                 </p>
 
@@ -229,23 +241,45 @@ const DoctorsSection = () => {
                   {doc.camps.map((camp, i) => (
                     <div
                       key={i}
-                      className="bg-gray-100 :bg-gray-700 p-3 rounded-lg"
+                      className={`p-3 rounded-lg transition-colors duration-500 ${
+                        isDarkMode ? "bg-slate-700" : "bg-gray-100"
+                      }`}
                     >
-                      <p className="font-semibold text-gray-700 :text-gray-300">
+                      <p
+                        className={`font-semibold transition-colors duration-500 ${
+                          isDarkMode ? "text-slate-100" : "text-gray-700"
+                        }`}
+                      >
                         {camp.campName}
                       </p>
-                      <p className="text-sm text-gray-600 :text-gray-400 flex items-center gap-2">
+                      <p
+                        className={`text-sm flex items-center gap-2 transition-colors duration-500 ${
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }`}
+                      >
                         <EnvironmentOutlined /> {camp.location}
                       </p>
-                      <p className="text-sm text-gray-600 :text-gray-400 flex items-center gap-2">
+                      <p
+                        className={`text-sm flex items-center gap-2 transition-colors duration-500 ${
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }`}
+                      >
                         <CalendarOutlined />{" "}
                         {new Date(camp.dateTime).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-gray-600 :text-gray-400 flex items-center gap-2">
+                      <p
+                        className={`text-sm flex items-center gap-2 transition-colors duration-500 ${
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }`}
+                      >
                         <DollarOutlined />{" "}
                         {camp.campFees === 0 ? "Free" : `${camp.campFees} BDT`}
                       </p>
-                      <p className="text-sm text-gray-600 :text-gray-400 flex items-center gap-2">
+                      <p
+                        className={`text-sm flex items-center gap-2 transition-colors duration-500 ${
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }`}
+                      >
                         <TeamOutlined /> {camp.participantCount} Participants
                       </p>
                     </div>
@@ -259,14 +293,22 @@ const DoctorsSection = () => {
         {visibleCount < doctors.length ? (
           <button
             onClick={handleSeeMore}
-            className="mt-8 px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
+            className={`mt-8 px-6 py-3 rounded-full font-medium transition-colors duration-500 ${
+              isDarkMode
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-blue-400 hover:bg-blue-400 text-white"
+            }`}
           >
             See More
           </button>
         ) : (
           <button
             onClick={handleSeeLess}
-            className="mt-8 px-6 py-3 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition"
+            className={`mt-8 px-6 py-3 rounded-full font-medium transition-colors duration-500 ${
+              isDarkMode
+                ? "bg-gray-600 hover:bg-gray-500 text-white"
+                : "bg-gray-400 hover:bg-gray-500 text-white"
+            }`}
           >
             See Less
           </button>

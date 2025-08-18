@@ -15,10 +15,12 @@ import logo from "../../assets/CareCamp logo.png";
 import AuthContext from "../../Context/AuthContext";
 import axiosSecure from "../../Hooks/AxiousSecure";
 import { useQuery } from "@tanstack/react-query";
+import DarkModeToggle from "react-dark-mode-toggle";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logout, authLoading } = use(AuthContext);
+  const { user, logout, authLoading, setIsDarkMode, isDarkMode } =
+    use(AuthContext);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -89,7 +91,7 @@ const Navbar = () => {
     <div className="bg-gradient-to-r from-[#101828] via-[#1A2235] to-[#2A334D] shadow-md fixed top-0 left-0 w-full z-50">
       <div className="navbar justify-between px-4 lg:px-8">
         {/* Logo + Site Name */}
-        <div>
+        <div className="flex items-center gap-1 md:gap-3">
           <Link
             to="/"
             className="flex items-center gap-2 text-xl font-bold text-primary"
@@ -99,6 +101,13 @@ const Navbar = () => {
               MediCamp
             </span>
           </Link>
+          <div className="flex items-center gap-2">
+            <DarkModeToggle
+              onChange={setIsDarkMode}
+              checked={isDarkMode}
+              size={40}
+            />
+          </div>
         </div>
 
         {/* Desktop Menu */}

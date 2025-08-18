@@ -264,7 +264,7 @@ const AdminAnalytics = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
       </div>
     );
   }
@@ -294,13 +294,13 @@ const AdminAnalytics = () => {
           <input
             type="date"
             {...register("filterDate")}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent"
             placeholder="Filter by date"
           />
           <input
             type="month"
             {...register("filterMonth")}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent"
             placeholder="Filter by month"
           />
         </div>
@@ -312,7 +312,7 @@ const AdminAnalytics = () => {
           title="Total Camps"
           value={metrics.totalCamps}
           icon={Activity}
-          color="text-blue-500"
+          color="text-blue-400"
           subValue="Active medical camps"
         />
         <StatCard

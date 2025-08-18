@@ -4,7 +4,7 @@ import axios from "axios";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TestimonialsSlider = () => {
+const TestimonialsSlider = ({ isDarkMode }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -48,6 +48,8 @@ const TestimonialsSlider = () => {
         className={`w-4 h-4 ${
           i < rating
             ? "fill-yellow-400 text-yellow-400"
+            : isDarkMode
+            ? "fill-slate-600 text-slate-600"
             : "fill-gray-200 text-gray-200"
         }`}
       />
@@ -74,7 +76,7 @@ const TestimonialsSlider = () => {
 
   const getRandomColor = (name) => {
     const colors = [
-      "bg-blue-500",
+      "bg-blue-400",
       "bg-green-500",
       "bg-purple-500",
       "bg-pink-500",
@@ -91,15 +93,35 @@ const TestimonialsSlider = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading testimonials...</div>;
+    return (
+      <div
+        className={`text-center py-10 ${
+          isDarkMode ? "text-slate-400" : "text-gray-600"
+        }`}
+      >
+        Loading testimonials...
+      </div>
+    );
   }
 
   if (!testimonials.length) {
-    return <div className="text-center py-10">No testimonials available.</div>;
+    return (
+      <div
+        className={`text-center py-10 ${
+          isDarkMode ? "text-slate-400" : "text-gray-600"
+        }`}
+      >
+        No testimonials available.
+      </div>
+    );
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-12 bg-gray-50 min-h-screen">
+    <div
+      className={`w-full max-w-6xl mx-auto px-4 py-12 min-h-screen transition-colors duration-500 ${
+        isDarkMode ? "bg-slate-900" : "bg-gray-50"
+      }`}
+    >
       {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -107,8 +129,18 @@ const TestimonialsSlider = () => {
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-800 mb-4">Testimonials</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h2
+          className={`text-4xl font-bold mb-4 transition-colors duration-500 ${
+            isDarkMode ? "text-slate-100" : "text-black"
+          }`}
+        >
+          Testimonials
+        </h2>
+        <p
+          className={`max-w-2xl mx-auto transition-colors duration-500 ${
+            isDarkMode ? "text-slate-400" : "text-gray-600"
+          }`}
+        >
           Hear what our participants have to say about their experience with our
           health camps
         </p>
@@ -124,9 +156,17 @@ const TestimonialsSlider = () => {
             onClick={prevTestimonial}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            className="p-3 rounded-full border-2 border-gray-300 bg-white hover:bg-gray-100 shadow-lg"
+            className={`p-3 rounded-full border-2 shadow-lg transition-colors duration-300 ${
+              isDarkMode
+                ? "border-slate-600 bg-slate-800 hover:bg-slate-700"
+                : "border-gray-300 bg-white hover:bg-gray-100"
+            }`}
           >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+            <ChevronLeft
+              className={`w-5 h-5 transition-colors duration-300 ${
+                isDarkMode ? "text-slate-200" : "text-gray-600"
+              }`}
+            />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -134,7 +174,11 @@ const TestimonialsSlider = () => {
             onClick={nextTestimonial}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
-            className="p-3 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg"
+            className={`p-3 rounded-full shadow-lg transition-colors duration-300 ${
+              isDarkMode
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
             <ChevronRight className="w-5 h-5 text-white" />
           </motion.button>
@@ -158,8 +202,17 @@ const TestimonialsSlider = () => {
                   },
                 }}
                 exit={{ opacity: 0, y: -50, scale: 0.9 }}
-                whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100"
+                whileHover={{
+                  y: -8,
+                  boxShadow: isDarkMode
+                    ? "0 20px 40px rgba(0,0,0,0.7)"
+                    : "0 20px 40px rgba(0,0,0,0.1)",
+                }}
+                className={`rounded-2xl p-6 shadow-lg border transition-colors duration-500 ${
+                  isDarkMode
+                    ? "bg-slate-800 border-slate-700 text-slate-100"
+                    : "bg-white border-gray-100 text-gray-700"
+                }`}
                 onMouseEnter={() => setIsAutoPlaying(false)}
                 onMouseLeave={() => setIsAutoPlaying(true)}
               >
@@ -170,7 +223,7 @@ const TestimonialsSlider = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.1 + 0.3 }}
-                  className="text-gray-700 mb-6 leading-relaxed text-sm"
+                  className="mb-6 leading-relaxed text-sm"
                 >
                   {testimonial.feedback}
                 </motion.p>
@@ -188,10 +241,18 @@ const TestimonialsSlider = () => {
                     {getInitials(testimonial.participantName)}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800 text-sm">
+                    <h4
+                      className={`font-semibold text-sm transition-colors duration-500 ${
+                        isDarkMode ? "text-slate-100" : "text-gray-800"
+                      }`}
+                    >
                       {testimonial.participantName}
                     </h4>
-                    <p className="text-gray-500 text-xs">
+                    <p
+                      className={`text-xs transition-colors duration-500 ${
+                        isDarkMode ? "text-slate-400" : "text-gray-500"
+                      }`}
+                    >
                       {testimonial.campName}
                     </p>
                   </div>
@@ -213,7 +274,11 @@ const TestimonialsSlider = () => {
               onMouseLeave={() => setIsAutoPlaying(true)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index === currentIndex
-                  ? "bg-indigo-600 scale-125"
+                  ? isDarkMode
+                    ? "bg-blue-500 scale-125"
+                    : "bg-indigo-600 scale-125"
+                  : isDarkMode
+                  ? "bg-slate-600 hover:bg-slate-500"
                   : "bg-gray-300 hover:bg-gray-400"
               }`}
             />
@@ -221,9 +286,15 @@ const TestimonialsSlider = () => {
         </div>
 
         {/* Progress bar */}
-        <div className="mt-8 w-full bg-gray-200 rounded-full h-1">
+        <div
+          className={`mt-8 w-full h-1 rounded-full transition-colors duration-500 ${
+            isDarkMode ? "bg-slate-700" : "bg-gray-200"
+          }`}
+        >
           <motion.div
-            className="bg-indigo-600 h-1 rounded-full"
+            className={`h-1 rounded-full ${
+              isDarkMode ? "bg-blue-500" : "bg-indigo-600"
+            }`}
             initial={{ width: 0 }}
             animate={{
               width: `${((currentIndex + 1) / testimonials.length) * 100}%`,
@@ -239,38 +310,62 @@ const TestimonialsSlider = () => {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-3xl md:text-4xl font-bold text-gray-800 mb-8"
+          className={`text-3xl md:text-4xl font-bold mb-8 transition-colors duration-500 ${
+            isDarkMode ? "text-slate-100" : "text-gray-800"
+          }`}
         >
-          Our <span className="text-indigo-600">Achievements</span>
+          Our <span className="text-blue-400">Achievements</span>
         </motion.h2>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-16 bg-white rounded-2xl p-8 shadow-lg"
+          className={`mt-16 rounded-2xl p-8 shadow-lg transition-colors duration-500 ${
+            isDarkMode
+              ? "bg-slate-800 text-slate-100"
+              : "bg-white text-gray-700"
+          }`}
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-indigo-600 mb-2">
+              <div className="text-3xl font-bold text-blue-400 mb-2">
                 {testimonials.length}+
               </div>
-              <p className="text-gray-600">Happy Participants</p>
+              <p
+                className={`transition-colors duration-500 ${
+                  isDarkMode ? "text-slate-400" : "text-gray-600"
+                }`}
+              >
+                Happy Participants
+              </p>
             </div>
             <div>
-              <div className="text-3xl font-bold text-indigo-600 mb-2">
+              <div className="text-3xl font-bold text-blue-400 mb-2">
                 {(
                   testimonials.reduce((sum, t) => sum + t.rating, 0) /
                   testimonials.length
                 ).toFixed(1)}
               </div>
-              <p className="text-gray-600">Average Rating</p>
+              <p
+                className={`transition-colors duration-500 ${
+                  isDarkMode ? "text-slate-400" : "text-gray-600"
+                }`}
+              >
+                Average Rating
+              </p>
             </div>
             <div>
-              <div className="text-3xl font-bold text-indigo-600 mb-2">
+              <div className="text-3xl font-bold text-blue-400 mb-2">
                 {testimonials.filter((t) => t.rating === 5).length}
               </div>
-              <p className="text-gray-600">5-Star Reviews</p>
+              <p
+                className={`transition-colors duration-500 ${
+                  isDarkMode ? "text-slate-400" : "text-gray-600"
+                }`}
+              >
+                5-Star Reviews
+              </p>
             </div>
           </div>
         </motion.div>

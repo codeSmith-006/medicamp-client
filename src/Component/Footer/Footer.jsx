@@ -1,12 +1,14 @@
 import { Facebook, Linkedin, Instagram } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import logo from "../../assets/CareCamp logo.png";
 import { Send } from "lucide-react";
 import toast from "react-hot-toast";
+import AuthContext from "../../Context/AuthContext";
 
 const Footer = () => {
   const year = new Date().getFullYear();
   const [email, setEmail] = useState("");
+  const { isDarkMode } = use(AuthContext);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -30,7 +32,13 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-10 px-6 mt-16">
+    <footer
+      className={`${
+        isDarkMode
+          ? "bg-gray-900 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.5)]"
+          : "bg-gray-900"
+      } text-gray-300 pt-10 px-6 transition-all duration-300`}
+    >
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Logo + About */}
         <div>
@@ -123,7 +131,7 @@ const Footer = () => {
             placeholder="Your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full sm:w-72 px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full sm:w-72 px-4 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             type="submit"

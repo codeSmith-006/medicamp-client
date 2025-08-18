@@ -18,6 +18,26 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
+  // Dark mode state with localStorage init
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved === "true" ? true : false;
+  });
+
+  // Effect to apply dark mode class to <html> and save preference
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
+
+  // Optional: toggle function for convenience
+  const toggleDark = () => setIsDarkMode((prev) => !prev);
+
   const registerWithEmail = (email, password) => {
     setAuthLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
@@ -61,7 +81,9 @@ const AuthProvider = ({ children }) => {
     logout,
     loginWithGoogle,
     updateUserProfile,
-    setUser
+    setUser,
+    isDarkMode,
+    setIsDarkMode,
   };
 
   return (

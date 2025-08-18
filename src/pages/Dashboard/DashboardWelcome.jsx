@@ -29,7 +29,7 @@ const DashboardWelcome = () => {
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 160 }}
           >
-            <Smile className="w-16 h-16 text-blue-500" />
+            <Smile className="w-16 h-16 text-blue-400" />
           </motion.div>
 
           <Title level={2} className="!text-3xl font-bold">

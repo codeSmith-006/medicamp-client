@@ -225,7 +225,7 @@ const ManageCamps = () => {
                       <p className="text-xs text-blue-800 font-medium">
                         Date & Time
                       </p>
-                      <p className="text-blue-700 font-semibold text-sm">
+                      <p className="text-blue-500 font-semibold text-sm">
                         {new Date(camp.dateTime).toLocaleDateString("en-US", {
                           weekday: "short",
                           year: "numeric",

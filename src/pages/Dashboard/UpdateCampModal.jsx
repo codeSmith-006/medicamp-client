@@ -247,7 +247,7 @@ const UpdateCampModal = ({ camp, onClose, onUpdated }) => {
             <button
               type="submit"
               disabled={loading || isSubmitting}
-              className="px-6 py-2 rounded-2xl bg-blue-500 cursor-pointer text-white hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow"
+              className="px-6 py-2 rounded-2xl bg-blue-400 cursor-pointer text-white hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
               {loading || isSubmitting ? "Updating..." : "Update Camp"}
             </button>

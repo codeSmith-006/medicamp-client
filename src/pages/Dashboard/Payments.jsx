@@ -92,7 +92,7 @@ const Payments = () => {
       dataIndex: "id",
       key: "id",
       render: (id) => (
-        <span className="text-blue-700 font-mono text-sm">{id}</span>
+        <span className="text-blue-500 font-mono text-sm">{id}</span>
       ),
     },
     {
@@ -188,7 +188,7 @@ const Payments = () => {
                   </p>
                   <p className="text-sm">
                     <span className="font-semibold">Txn ID:</span>{" "}
-                    <span className="font-mono text-blue-700">{tx.id}</span>
+                    <span className="font-mono text-blue-500">{tx.id}</span>
                   </p>
                   <p className="text-sm">
                     <span className="font-semibold">Date:</span> {tx.date}

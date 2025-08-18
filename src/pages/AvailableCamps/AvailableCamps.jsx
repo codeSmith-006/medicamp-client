@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Input, Select, Spin, Button } from "antd";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import axiosSecure from "../../Hooks/AxiousSecure";
 import CampCard from "./CampCard";
 import { Grid, List } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import AuthContext from "../../Context/AuthContext";
 
 const { Option } = Select;
 
@@ -16,6 +17,8 @@ const fadeInUp = {
 };
 
 const AvailableCamps = () => {
+  const { isDarkMode } = useContext(AuthContext);
+
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
   const [viewMode, setViewMode] = useState("grid3");
@@ -50,7 +53,9 @@ const AvailableCamps = () => {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-4 pt-26 pb-10"
+      className={`max-w-7xl mx-auto px-4 pt-26 pb-10 transition-colors duration-300 ${
+        isDarkMode ? "bg-slate-900 text-slate-200" : "bg-gray-50 text-gray-800"
+      }`}
       initial="initial"
       animate="animate"
       variants={fadeInUp}
@@ -58,12 +63,19 @@ const AvailableCamps = () => {
       <Helmet>
         <title>Available Camps | MCMS</title>
       </Helmet>
+
       {/* Header */}
       <div className="mb-10 text-center">
-        <h2 className="text-4xl font-bold text-indigo-700">
-          🏥 Available Medical Camps
+        <h2
+          className={`${
+            isDarkMode ? "text-slate-100" : "text-black"
+          } text-4xl font-bold`}
+        >
+          Available Medical Camps
         </h2>
-        <p className="text-gray-600 mt-2">
+        <p
+          className={`${isDarkMode ? "text-slate-400" : "text-gray-500"} mt-2`}
+        >
           Browse upcoming health camps and join the one best suited to you.
         </p>
       </div>
@@ -75,7 +87,11 @@ const AvailableCamps = () => {
           value={search}
           onChange={handleSearchChange}
           size="large"
-          className="md:w-1/2"
+          className={`md:w-1/2 transition-colors duration-300 ${
+            isDarkMode
+              ? "bg-[#2F2F2F] text-slate-200 border-gray-600 placeholder-slate-400"
+              : "bg-white text-gray-800 border-gray-300 placeholder-gray-500"
+          }`}
         />
 
         <div className="flex items-center gap-2">
@@ -84,7 +100,12 @@ const AvailableCamps = () => {
             onChange={handleSortChange}
             placeholder="Sort by..."
             size="large"
-            className="min-w-[180px]"
+            className={`min-w-[180px] transition-colors duration-300 ${
+              isDarkMode ? "bg-[#2F2F2F] text-slate-200 border-gray-600" : ""
+            }`}
+            dropdownClassName={`${
+              isDarkMode ? "bg-[#2F2F2F] text-slate-200" : ""
+            }`}
           >
             <Option value="participant">Most Registered</Option>
             <Option value="feesLow">Fees: Low to High</Option>
@@ -96,7 +117,6 @@ const AvailableCamps = () => {
             icon={
               viewMode === "grid3" ? <Grid size={18} /> : <List size={18} />
             }
-            onClick={handleViewToggle}
           />
         </div>
       </div>
@@ -107,7 +127,11 @@ const AvailableCamps = () => {
           <Spin size="large" />
         </div>
       ) : data?.result?.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10">
+        <p
+          className={`${
+            isDarkMode ? "text-slate-400" : "text-gray-500"
+          } text-center mt-10`}
+        >
           No camps found matching your criteria.
         </p>
       ) : (
@@ -119,7 +143,7 @@ const AvailableCamps = () => {
           }`}
         >
           {data?.result?.map((camp) => (
-            <CampCard key={camp._id} camp={camp} />
+            <CampCard key={camp._id} camp={camp} isDarkMode={isDarkMode} />
           ))}
         </motion.div>
       )}
